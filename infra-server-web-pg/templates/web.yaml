@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: finni-web-app
+  labels:
+    app: finni-web-app
+    group: finni-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: finni-web-app
+  template:
+    metadata:
+      labels:
+        app: finni-web-app
+        group: finni-web
+    spec:
+      containers:
+        - name: finni-web-app
+          image: gitea.opracs.com/lewisalva/finni-web:latest
+          ports:
+            - containerPort: 80
+          resources:
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
+      imagePullSecrets:
+        - name: regcred
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: finni-web-app
+  labels:
+    group: finni-web
+spec:
+  type: ClusterIP
+  selector:
+    app: finni-web-app
+  ports:
+    - port: 80
+      targetPort: 80

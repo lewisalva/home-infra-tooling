@@ -1,0 +1,55 @@
+name: Build and Deploy lambdas
+
+on:
+  push:
+    branches:
+      - main
+    # paths:
+    #   - 'lambdas/**'
+    #   - '.gitea/workflows/deploy-lambda.yaml'
+
+env:
+  NODE_ENV: 16
+  LAMBDA_DIR: ./
+
+jobs:
+  buildAndDeployLambda:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install zip
+        run: |
+          apt-get update
+          apt-get install zip
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ env.NODE_ENV }}
+
+      - name: Install AWS CLI
+        run: |
+          curl -O 'https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip'
+          unzip awscli-exe-linux-aarch64.zip
+          mkdir ~/bin
+          mkdir ~/aws-cli
+          ./aws/install -i ~/aws-cli -b ~/bin
+          ~/bin/aws --version
+
+      - name: Build and Zip Lambda
+        working-directory: ${{ env.LAMBDA_DIR }}
+        run: |
+          npm ci
+          mkdir build
+          zip -r "build/lambda.zip" .
+
+      - name: Update Lambda Code
+        working-directory: ${{ env.LAMBDA_DIR }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+        run: |
+          ~/bin/aws lambda update-function-code --function-name ${{ secrets.LAMBDA_ARN }} --zip-file fileb://./build/lambda.zip

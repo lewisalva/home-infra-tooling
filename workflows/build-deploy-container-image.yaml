@@ -1,0 +1,51 @@
+name: Build and Deploy Container Image
+
+on:
+  push:
+    branches:
+      - main
+    # paths:
+    #   - 'server/**'
+    #   - '.gitea/workflows/deploy-server.yaml'
+
+env:
+  WORKING_DIR: ./
+
+jobs:
+  buildImage:
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Login to docker
+        run: docker login ${{ secrets.DOCKER_DOMAIN }} -u ${{ secrets.DOCKER_USERNAME }} --password-stdin <<< '${{ secrets.DOCKER_PASSWORD }}'
+
+      - name: Build and push Docker image
+        working-directory: ${{ env.WORKING_DIR }}
+        run: |
+          docker build -t ${{ secrets.DOCKER_DOMAIN }}/${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:latest -t ${{ secrets.DOCKER_DOMAIN }}/${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:${{ github.sha }} .
+          docker push ${{ secrets.DOCKER_DOMAIN }}/${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }} --all-tags
+
+  updateContainer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    needs: buildImage
+    steps:
+    - name: Set kubeconfig
+      uses: timheuer/base64-to-file@v1.2
+      with:
+        fileName: 'kube.config'
+        fileDir: '~/'
+        encodedString: ${{ secrets.KUBE_CONFIG }}
+
+    - uses: azure/setup-kubectl@v3
+      with:
+        version: 'v1.27.9'
+
+    - name: Kuberentes set image
+      env:
+        KUBECONFIG: ~/kube.config
+      run: |
+        kubectl set image -n ${{ K8S_NAMESPACE }} deployment/${{ K8S_DEPLOYMENT }} ${{ K8S_CONTAINER }}=${{ secrets.DOCKER_DOMAIN }}/${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:${{ github.sha }}

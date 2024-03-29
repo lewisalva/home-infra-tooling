@@ -1,0 +1,56 @@
+name: Build and Deploy React Site to AWS
+
+on:
+  push:
+    branches:
+      - main
+    # paths:
+    #   - '{{THISFILE}}.yaml'
+
+env:
+  NODE_ENV: 18
+  WEB_DIR: ./
+
+jobs:
+  buildAndDeployToAws:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ env.NODE_ENV }}
+
+      - name: Install AWS CLI
+        run: |
+          curl -O 'https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip'
+          unzip awscli-exe-linux-aarch64.zip
+          mkdir ~/bin
+          mkdir ~/aws-cli
+          ./aws/install -i ~/aws-cli -b ~/bin
+          ~/bin/aws --version
+
+      - name: Install dependencies
+        working-directory: ${{ env.WEB_DIR }}
+        run: npm ci
+
+      - name: Build site
+        working-directory: ${{ env.WEB_DIR }}
+        run: npm run build
+
+      - name: Deploy to S3
+        working-directory: ${{ env.WEB_DIR }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+        run: ~/bin/aws s3 sync ./build ${{ secrets.S3_BUCKET }} --acl public-read --follow-symlinks --delete
+
+      - name: Invalidate CloudFront cache
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+        run: ~/bin/aws cloudfront create-invalidation --distribution-id ${{ AWS_CF_DISTRIBUTION }} --paths "/*"

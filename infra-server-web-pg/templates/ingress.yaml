@@ -1,0 +1,53 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: finni-local-ingress
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: finni.opracs.com
+      http:
+        paths:
+          - backend:
+              service:
+                name: finni-server-app
+                port:
+                  number: 5111
+            path: /api
+            pathType: ImplementationSpecific
+          - backend:
+              service:
+                name: finni-web-app
+                port:
+                  number: 80
+            path: /
+            pathType: ImplementationSpecific
+  tls:
+    - hosts:
+        - finni.opracs.com
+      secretName: tls-finni-ingress
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: finni-ngrok-ingress
+spec:
+  ingressClassName: ngrok
+  rules:
+    - host: finni-jaysserver.ngrok.app
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: finni-server-app
+                port:
+                  number: 5111
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: finni-web-app
+                port:
+                  number: 80
