@@ -1,0 +1,13 @@
+import { Elysia } from 'elysia';
+
+import { authentication, lucia } from '../../globalMiddleware/authentication';
+
+export const signoutPost = new Elysia()
+  .use(authentication)
+  .post('/signout', async ({ cookie, session, set }) => {
+    session && session.id && (await lucia.invalidateSession(session.id));
+
+    delete cookie[lucia.sessionCookieName];
+
+    set.status = 204;
+  });
