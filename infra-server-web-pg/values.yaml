@@ -4,7 +4,7 @@ fullnameOverride: ""
 podAnnotations: {}
 podLabels: {}
 
-imagePullSecrets: [{ name: "regcred" }]
+imagePullSecrets: [{ name: "regcred" }] # TODO create 'regcred' as part of this chart
 
 ingress:
   enabled: false
