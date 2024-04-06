@@ -1,6 +1,0 @@
-apiVersion: v2
-name: infra-server-pg
-description: Infrastructure for a web server with postgres
-type: application
-version: 0.0.1
-appVersion: "0.0.1"
