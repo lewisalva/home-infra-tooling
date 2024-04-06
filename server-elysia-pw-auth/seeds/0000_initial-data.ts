@@ -7,13 +7,14 @@ import { organizationsTable, usersOrganizationsTable, usersTable } from '../src/
 const { INITIAL_ADMIN_EMAIL = '', INITIAL_ADMIN_PASS = '', INITIAL_ADMIN_NAME = '' } = process.env;
 console.log(INITIAL_ADMIN_EMAIL, INITIAL_ADMIN_PASS, INITIAL_ADMIN_NAME);
 
-const initialUser = {
+const initialUser: (typeof usersTable)['$inferInsert'] = {
   name: INITIAL_ADMIN_NAME,
   email: INITIAL_ADMIN_EMAIL.toLowerCase(),
   hashedPassword: await Bun.password.hash(INITIAL_ADMIN_PASS),
+  isPlatformAdmin: true,
 };
 
-const initialOrganization = {
+const initialOrganization: (typeof organizationsTable)['$inferInsert'] = {
   name: 'J1Support',
 };
 

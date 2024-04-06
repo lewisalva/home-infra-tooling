@@ -1,9 +1,9 @@
 import { Elysia } from 'elysia';
 
-import { authentication } from '../../globalMiddleware/authentication';
+import { ensureAuthentication } from '../../globalMiddleware/authentication';
 
 export const usersRouter = new Elysia({ prefix: '/users' })
-  .use(authentication)
+  .use(ensureAuthentication)
   .get('/me', ({ user }) => {
     return { user };
   });

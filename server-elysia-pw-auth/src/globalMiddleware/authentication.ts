@@ -31,7 +31,7 @@ declare module 'lucia' {
   }
 }
 
-export const authentication = new Elysia()
+export const ensureAuthentication = new Elysia()
   .derive(
     { as: 'scoped' },
     async (

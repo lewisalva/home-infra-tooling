@@ -1,9 +1,9 @@
 import { Elysia } from 'elysia';
 
-import { authentication, lucia } from '../../globalMiddleware/authentication';
+import { ensureAuthentication, lucia } from '../../globalMiddleware/authentication';
 
 export const signoutPost = new Elysia()
-  .use(authentication)
+  .use(ensureAuthentication)
   .post('/signout', async ({ cookie, session, set }) => {
     session && session.id && (await lucia.invalidateSession(session.id));
 

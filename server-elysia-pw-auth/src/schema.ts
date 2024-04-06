@@ -1,5 +1,5 @@
 import { relations } from 'drizzle-orm';
-import { pgEnum, pgTable, primaryKey, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { boolean, pgEnum, pgTable, primaryKey, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 
 /* Table Definitions */
 export const organizationsTable = pgTable('organizations', {
@@ -14,6 +14,7 @@ export const usersTable = pgTable('users', {
   name: text('name').notNull().default(''),
   email: text('email').notNull().unique(),
   hashedPassword: text('hashed_password').notNull(),
+  isPlatformAdmin: boolean('is_platform_admin').notNull().default(false),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 });

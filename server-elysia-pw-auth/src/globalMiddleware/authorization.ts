@@ -1,11 +1,15 @@
 import { and, eq } from 'drizzle-orm';
 
-import { usersOrganizationsTable } from '../schema';
+import { usersOrganizationsTable, usersTable } from '../schema';
 import db from './db';
 
+const fetchUser = (userId: (typeof usersOrganizationsTable)['$inferSelect']['userId']) => {
+  return db.query.usersTable.findFirst({ where: eq(usersTable.id, userId) });
+};
+
 const fetchUserInOrganization = (
-  userId: typeof usersOrganizationsTable.userId.dataType,
-  organizationId: typeof usersOrganizationsTable.organizationId.dataType,
+  userId: (typeof usersOrganizationsTable)['$inferSelect']['userId'],
+  organizationId: (typeof usersOrganizationsTable)['$inferSelect']['organizationId'],
   shouldCheckAdmin = false
 ) => {
   const filters = [
@@ -26,8 +30,8 @@ const fetchUserInOrganization = (
 };
 
 export const isUserAuthorizedForOrganization = async (
-  userId: typeof usersOrganizationsTable.userId.dataType,
-  organizationId: typeof usersOrganizationsTable.organizationId.dataType
+  userId: (typeof usersOrganizationsTable)['$inferSelect']['userId'],
+  organizationId: (typeof usersOrganizationsTable)['$inferSelect']['organizationId']
 ): Promise<boolean> => {
   const result = await fetchUserInOrganization(userId, organizationId);
 
@@ -35,10 +39,17 @@ export const isUserAuthorizedForOrganization = async (
 };
 
 export const isUserAdminForOrganization = async (
-  userId: typeof usersOrganizationsTable.userId.dataType,
-  organizationId: typeof usersOrganizationsTable.organizationId.dataType
+  userId: (typeof usersOrganizationsTable)['$inferSelect']['userId'],
+  organizationId: (typeof usersOrganizationsTable)['$inferSelect']['organizationId']
 ): Promise<boolean> => {
   const result = await fetchUserInOrganization(userId, organizationId, true);
 
   return result !== undefined;
+};
+
+export const isUserProductAdmin = async (
+  userId: (typeof usersOrganizationsTable)['$inferSelect']['userId']
+): Promise<boolean> => {
+  const user = await fetchUser(userId);
+  return user?.isPlatformAdmin ?? false;
 };

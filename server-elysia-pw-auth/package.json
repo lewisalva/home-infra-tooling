@@ -15,6 +15,7 @@
     "@elysiajs/swagger": "^1.0.3",
     "@lucia-auth/adapter-drizzle": "^1.0.7",
     "drizzle-orm": "^0.30.6",
+    "drizzle-typebox": "^0.1.1",
     "elysia": "^1.0.9",
     "lucia": "^3.1.1",
     "pg": "^8.11.3",
