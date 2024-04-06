@@ -7,7 +7,7 @@ import { organizationsTable, usersOrganizationsTable } from '../../schema';
 
 export const organizationsRouter = new Elysia({ prefix: '/organizations' })
   .use(ensureAuthentication)
-  .get('/', ({ user }) => {
+  .get('', ({ user }) => {
     return db.query.usersOrganizationsTable.findMany({
       columns: { permission: true, userId: true },
       with: { organization: true },
