@@ -23,4 +23,4 @@ const app = new Elysia({ prefix: '/api' })
 
 console.log(`🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`);
 
-export type FinniServer = typeof app;
+export type API = typeof app;

@@ -29,7 +29,7 @@ export const sessionsTable = pgTable('sessions', {
   }).notNull(),
 });
 
-export const userPermissionsEnum = pgEnum('permission', ['none', 'member', 'admin']);
+export const userPermissionsEnum = pgEnum('permission', ['member', 'admin']);
 export const usersOrganizationsTable = pgTable(
   'users_organizations',
   {
@@ -39,7 +39,7 @@ export const usersOrganizationsTable = pgTable(
     organizationId: uuid('organization_id')
       .notNull()
       .references(() => organizationsTable.id, { onDelete: 'cascade' }),
-    permission: userPermissionsEnum('permission').notNull().default('none'),
+    permission: userPermissionsEnum('permission').notNull().default('member'),
     createdAt: timestamp('created_at').defaultNow(),
     updatedAt: timestamp('updated_at').defaultNow(),
   },

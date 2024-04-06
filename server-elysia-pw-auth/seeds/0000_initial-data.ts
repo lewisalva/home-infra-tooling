@@ -3,7 +3,7 @@ import 'dotenv/config';
 import { eq } from 'drizzle-orm';
 
 import db from '../src/globalMiddleware/db';
-import { practicesTable, userPracticesTable, usersTable } from '../src/schema';
+import { organizationsTable, usersOrganizationsTable, usersTable } from '../src/schema';
 const { INITIAL_ADMIN_EMAIL = '', INITIAL_ADMIN_PASS = '', INITIAL_ADMIN_NAME = '' } = process.env;
 console.log(INITIAL_ADMIN_EMAIL, INITIAL_ADMIN_PASS, INITIAL_ADMIN_NAME);
 
@@ -13,8 +13,8 @@ const initialUser = {
   hashedPassword: await Bun.password.hash(INITIAL_ADMIN_PASS),
 };
 
-const initialPractice = {
-  name: 'Finni Health',
+const initialOrganization = {
+  name: 'J1Support',
 };
 
 const [user] = await db.select().from(usersTable).where(eq(usersTable.email, initialUser.email));
@@ -28,11 +28,11 @@ const [{ userId }] = await db
   .values(initialUser)
   .returning({ userId: usersTable.id });
 
-const [{ practiceId }] = await db
-  .insert(practicesTable)
-  .values(initialPractice)
-  .returning({ practiceId: practicesTable.id });
+const [{ organizationId }] = await db
+  .insert(organizationsTable)
+  .values(initialOrganization)
+  .returning({ organizationId: organizationsTable.id });
 
-await db.insert(userPracticesTable).values({ userId, practiceId });
+await db.insert(usersOrganizationsTable).values({ userId, organizationId, permission: 'admin' });
 
 process.exit(0);
