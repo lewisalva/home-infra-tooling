@@ -1,22 +1,14 @@
-import { Elysia, error, t } from 'elysia';
+import { Elysia, error } from 'elysia';
 
-import { lucia } from '../../globalMiddleware/authentication';
-import db from '../../globalMiddleware/db';
-import { usersTable } from '../../schema';
+import { createSessionCookie, createUser, signUpUserSchema } from '../../models/User';
 
 export const signupPost = new Elysia().post(
   '/signup',
   async ({ body: { email, name, password }, cookie, set }) => {
-    const hashedPassword = await Bun.password.hash(password);
-
     try {
-      const [{ userId }] = await db
-        .insert(usersTable)
-        .values({ email: email.toLowerCase(), name, hashedPassword })
-        .returning({ userId: usersTable.id });
+      const userId = await createUser({ email, name, password });
 
-      const session = await lucia.createSession(userId, {});
-      const sessionCookie = lucia.createSessionCookie(session.id);
+      const sessionCookie = await createSessionCookie(userId);
 
       cookie[sessionCookie.name].set({
         value: sessionCookie.value,
@@ -37,10 +29,6 @@ export const signupPost = new Elysia().post(
     }
   },
   {
-    body: t.Object({
-      name: t.String({ minLength: 1, error: 'Invalid name' }),
-      email: t.String({ format: 'email', error: 'Invalid email' }),
-      password: t.String({ minLength: 6, error: 'Invalid password' }),
-    }),
+    body: signUpUserSchema,
   }
 );
