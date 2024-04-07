@@ -4,11 +4,11 @@ import { Client } from 'pg';
 import * as schema from '../schema';
 import env from './environment';
 
-const client = new Client({
+export const pgClient = new Client({
   connectionString: env.PG_URL,
 });
-await client.connect();
+await pgClient.connect();
 
-const db = drizzle(client, { schema });
+const db = drizzle(pgClient, { schema });
 
 export default db;

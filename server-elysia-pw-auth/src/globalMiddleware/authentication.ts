@@ -41,10 +41,10 @@ export const ensureAuthentication = new Elysia()
       session: Session | null;
     }> => {
       if (context.request.method !== 'GET') {
-        const originHeader = context.request.headers.get('Origin');
-        // NOTE: You may need to use `X-Forwarded-Host` instead
-        const hostHeader = context.request.headers.get('Host');
-        console.log({ originHeader, hostHeader });
+        // const originHeader = context.request.headers.get('Origin');
+        // // NOTE: You may need to use `X-Forwarded-Host` instead
+        // const hostHeader = context.request.headers.get('Host');
+        // console.log({ originHeader, hostHeader });
         // if (!originHeader || !hostHeader || !verifyRequestOrigin(originHeader, [hostHeader])) {
         //   return {
         //     user: null,

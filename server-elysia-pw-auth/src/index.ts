@@ -8,7 +8,7 @@ import { usersRouter } from './api/users/users.router';
 import env from './globalMiddleware/environment';
 import { loggerMiddleware } from './globalMiddleware/logger';
 
-const app = new Elysia({ prefix: '/api' })
+export const app = new Elysia({ prefix: '/api' })
   .use(loggerMiddleware)
   .use(cors())
   .use(swagger())
