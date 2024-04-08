@@ -3,15 +3,21 @@ import { and, eq } from 'drizzle-orm';
 import { usersOrganizationsTable, usersTable } from '../schema';
 import db from './db';
 
-const fetchUser = (userId: (typeof usersOrganizationsTable)['$inferSelect']['userId']) => {
+type UserOrganization = (typeof usersOrganizationsTable)['$inferSelect'];
+
+const fetchUser = (userId: UserOrganization['userId']) => {
   return db.query.usersTable.findFirst({ where: eq(usersTable.id, userId) });
 };
 
-const fetchUserInOrganization = (
-  userId: (typeof usersOrganizationsTable)['$inferSelect']['userId'],
-  organizationId: (typeof usersOrganizationsTable)['$inferSelect']['organizationId'],
-  shouldCheckAdmin = false
-) => {
+const fetchUserInOrganization = ({
+  userId,
+  organizationId,
+  shouldCheckAdmin = false,
+}: {
+  userId: UserOrganization['userId'];
+  organizationId: UserOrganization['organizationId'];
+  shouldCheckAdmin?: boolean;
+}) => {
   const filters = [
     eq(usersOrganizationsTable.userId, userId),
     eq(usersOrganizationsTable.organizationId, organizationId),
@@ -29,27 +35,33 @@ const fetchUserInOrganization = (
   });
 };
 
+export const isUserProductAdmin = async (userId: UserOrganization['userId']): Promise<boolean> => {
+  const user = await fetchUser(userId);
+  return user?.isPlatformAdmin ?? false;
+};
+
 export const isUserAuthorizedForOrganization = async (
-  userId: (typeof usersOrganizationsTable)['$inferSelect']['userId'],
-  organizationId: (typeof usersOrganizationsTable)['$inferSelect']['organizationId']
+  userId: UserOrganization['userId'],
+  organizationId: UserOrganization['organizationId']
 ): Promise<boolean> => {
-  const result = await fetchUserInOrganization(userId, organizationId);
+  if (await isUserProductAdmin(userId)) {
+    return true;
+  }
+
+  const result = await fetchUserInOrganization({ userId, organizationId });
 
   return result !== undefined;
 };
 
 export const isUserAdminForOrganization = async (
-  userId: (typeof usersOrganizationsTable)['$inferSelect']['userId'],
-  organizationId: (typeof usersOrganizationsTable)['$inferSelect']['organizationId']
+  userId: UserOrganization['userId'],
+  organizationId: UserOrganization['organizationId']
 ): Promise<boolean> => {
-  const result = await fetchUserInOrganization(userId, organizationId, true);
+  if (await isUserProductAdmin(userId)) {
+    return true;
+  }
+
+  const result = await fetchUserInOrganization({ userId, organizationId, shouldCheckAdmin: true });
 
   return result !== undefined;
-};
-
-export const isUserProductAdmin = async (
-  userId: (typeof usersOrganizationsTable)['$inferSelect']['userId']
-): Promise<boolean> => {
-  const user = await fetchUser(userId);
-  return user?.isPlatformAdmin ?? false;
 };

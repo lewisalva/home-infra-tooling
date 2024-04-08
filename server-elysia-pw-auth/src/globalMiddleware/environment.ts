@@ -4,7 +4,7 @@ let dotenvPath = '.env.local';
 if (process.env.NODE_ENV === 'test') {
   dotenvPath = '.env.test';
 } else if (process.env.NODE_ENV === 'production') {
-  dotenvPath = 'env';
+  dotenvPath = '.env';
 }
 
 const { parsed, error } = config({ path: dotenvPath });

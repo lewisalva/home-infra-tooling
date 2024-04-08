@@ -1,17 +1,17 @@
 import { treaty } from '@elysiajs/eden';
-import { describe, expect, it } from 'bun:test';
+import { describe, expect, mock, test } from 'bun:test';
 
-import { authRouter } from '../../../src/api/auth/auth.router';
+import { authRouter } from './auth.router';
 
 const authApi = treaty(authRouter);
 
 describe('auth.router', () => {
-  it('should be defined', () => {
+  test('it should be defined', () => {
     expect(authRouter).toBeDefined();
   });
 
   describe('signin.post', () => {
-    it('throws invalid email', async () => {
+    test('it throws invalid email', async () => {
       const { status, error } = await authApi.auth.signin.post({ email: '', password: '' });
 
       expect(status).toEqual(422);
@@ -19,7 +19,7 @@ describe('auth.router', () => {
       expect(error?.value).toEqual('Invalid email');
     });
 
-    it('throws invalid password', async () => {
+    test('it throws invalid password', async () => {
       const { status, error } = await authApi.auth.signin.post({
         email: 'a@b.test',
         password: '',
@@ -30,7 +30,7 @@ describe('auth.router', () => {
       expect(error?.value).toEqual('Invalid password');
     });
 
-    it('returns 404', async () => {
+    test('it returns 404', async () => {
       const { status, error } = await authApi.auth.signin.post({
         email: 'a@b.test',
         password: 'password',
@@ -40,7 +40,7 @@ describe('auth.router', () => {
       expect(error?.value).toEqual('Not Found');
     });
 
-    it('returns 204 w/ cookie', async () => {
+    test('it returns 204 w/ cookie', async () => {
       const { status, headers } = await authApi.auth.signin.post({
         email: 'lewis@j1.support',
         password: '123456',
@@ -54,14 +54,14 @@ describe('auth.router', () => {
   });
 
   describe('signout.post', () => {
-    it('throws not logged in', async () => {
+    test('it throws not logged in', async () => {
       const { status, error } = await authApi.auth.signout.post();
 
       expect(status).toEqual(401);
       expect(error?.value).toEqual('Unauthorized');
     });
 
-    it('returns 204 w/ cookie deletion; for valid login', async () => {
+    test('it returns 204 w/ cookie deletion; for valid login', async () => {
       const { headers: authHeaders } = await authApi.auth.signin.post({
         email: 'lewis@j1.support',
         password: '123456',
@@ -79,7 +79,7 @@ describe('auth.router', () => {
   });
 
   describe('signup.post', () => {
-    it('throws invalid email', async () => {
+    test('it throws invalid email', async () => {
       const { status, error } = await authApi.auth.signup.post({
         email: '',
         password: '',
@@ -91,7 +91,7 @@ describe('auth.router', () => {
       expect(error?.value).toEqual('Invalid email');
     });
 
-    it('throws invalid password', async () => {
+    test('it throws invalid password', async () => {
       const { status, error } = await authApi.auth.signup.post({
         email: 'a@b.test',
         password: '',
@@ -103,7 +103,7 @@ describe('auth.router', () => {
       expect(error?.value).toEqual('Invalid password');
     });
 
-    it('throws invalid name', async () => {
+    test('it throws invalid name', async () => {
       const { status, error } = await authApi.auth.signup.post({
         email: 'a@b.test',
         password: 'password',
@@ -115,7 +115,7 @@ describe('auth.router', () => {
       expect(error?.value).toEqual('Invalid name');
     });
 
-    it('throws conflict', async () => {
+    test('it throws conflict', async () => {
       const { status, error } = await authApi.auth.signup.post({
         email: 'lewis@j1.support',
         password: 'password',
@@ -126,9 +126,7 @@ describe('auth.router', () => {
       expect(error?.value).toEqual('Conflict');
     });
 
-    it.todo('throws 500', () => {}); // not sure what will trigger this atm
-
-    it('returns 204 w/ cookie', async () => {
+    test('it returns 204 w/ cookie', async () => {
       const { status, headers } = await authApi.auth.signup.post({
         email: 'lewis@j2.support',
         password: 'password',
@@ -139,6 +137,21 @@ describe('auth.router', () => {
 
       expect(status).toEqual(201);
       expect(cookie).toHaveLength(1);
+    });
+
+    /* Ordering matters, make sure this is at the end because of the mocked module */
+    test('throws 500', async () => {
+      mock.module('../../models/User', () => ({
+        createUser: () => Promise.reject(new Error('Test Error')),
+      }));
+      const { status, error } = await authApi.auth.signup.post({
+        email: 'lewis@j1.support',
+        password: 'password',
+        name: 'a',
+      });
+
+      expect(status).toEqual(500);
+      expect(error?.value).toEqual('Internal Server Error');
     });
   });
 });
