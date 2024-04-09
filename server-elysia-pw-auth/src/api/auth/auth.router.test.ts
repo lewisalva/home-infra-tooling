@@ -142,7 +142,7 @@ describe('auth.router', () => {
     /* Ordering matters, make sure this is at the end because of the mocked module */
     test('throws 500', async () => {
       mock.module('../../models/User', () => ({
-        createUser: () => Promise.reject(new Error('Test Error')),
+        createUser: () => Promise.reject(),
       }));
       const { status, error } = await authApi.auth.signup.post({
         email: 'lewis@j1.support',
