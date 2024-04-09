@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  namespace: multi-tenant-app
+  labels:
+    app: web
+    group: multi-tenant-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+        - name: web
+          image: gitea.opracs.com/REPO/WEB_IMAGE:latest
+          ports:
+            - containerPort: 80
+          resources:
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
+      imagePullSecrets:
+        - name: regcred
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+  namespace: multi-tenant-app
+  labels:
+    app: web
+    group: multi-tenant-app
+spec:
+  type: ClusterIP
+  selector:
+    app: web
+  ports:
+    - port: 80
+      targetPort: 80

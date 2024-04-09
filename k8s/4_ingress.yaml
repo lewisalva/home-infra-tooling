@@ -1,0 +1,61 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: local-ingress
+  namespace: multi-tenant-app
+  labels:
+    app: local-ingress
+    group: multi-tenant-app
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: NAME.opracs.com
+      http:
+        paths:
+          - backend:
+              service:
+                name: server
+                port:
+                  number: 5111
+            path: /api
+            pathType: ImplementationSpecific
+          - backend:
+              service:
+                name: web
+                port:
+                  number: 80
+            path: /
+            pathType: ImplementationSpecific
+  tls:
+    - hosts:
+        - NAME.opracs.com
+      secretName: tls-ingress
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ngrok-ingress
+  namespace: multi-tenant-app
+  labels:
+    app: ngrok-ingress
+    group: multi-tenant-app
+spec:
+  ingressClassName: ngrok
+  rules:
+    - host: NAME.ngrok.app
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: server
+                port:
+                  number: 5111
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: web
+                port:
+                  number: 80
