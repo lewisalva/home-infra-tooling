@@ -21,8 +21,8 @@ describe('users.router', () => {
     const { status, data } = await usersApi.users.me.get({ headers });
 
     expect(status).toEqual(200);
-    expect(data?.user).toHaveProperty('id');
-    expect(data?.user).toHaveProperty('email', 'lewis@j1.support');
+    expect(data).toHaveProperty('id');
+    expect(data).toHaveProperty('email', 'lewis@j1.support');
   });
 
   describe('put /me', () => {

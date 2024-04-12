@@ -69,7 +69,9 @@ describe('auth.router', () => {
 
       const [cookie] = (authHeaders as Headers).getSetCookie();
 
-      const { status, headers } = await authApi.auth.signout.post(null, { headers: { cookie } });
+      const { status, headers } = await authApi.auth.signout.post(null, {
+        headers: { cookie, origin: 'http://localhost:3000', host: 'localhost:3000' },
+      });
 
       const deletedCookie = (headers as Headers).getSetCookie();
 

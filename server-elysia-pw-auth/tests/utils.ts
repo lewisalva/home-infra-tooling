@@ -16,6 +16,8 @@ export const getAuthHeaders = async () => {
     const [cookie] = (headers as Headers).getSetCookie();
 
     authHeaders.set('cookie', cookie);
+    authHeaders.set('origin', 'http://localhost:3000');
+    authHeaders.set('host', 'localhost:3000');
   }
 
   return Object.fromEntries(authHeaders);

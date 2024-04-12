@@ -1,4 +1,5 @@
 import { beforeAll, describe, expect, test } from 'bun:test';
+import { User } from 'lucia';
 
 import { organizationsTable, usersOrganizationsTable, usersTable } from '../schema';
 import {
@@ -11,11 +12,11 @@ import db from './db';
 describe('Authorization middleware', () => {
   let organizationId: string;
   let otherOrgId: string;
-  let memberId: string;
-  let adminId: string;
-  let platformAdminId: string;
-  let otherMemberId: string;
-  let otherAdminId: string;
+  let member: User;
+  let admin: User;
+  let platformAdmin: User;
+  let otherMember: User;
+  let otherAdmin: User;
 
   beforeAll(async () => {
     const organizationData = [
@@ -65,13 +66,19 @@ describe('Authorization middleware', () => {
       .values(usersData)
       .returning({ userId: usersTable.id });
 
-    [
+    const [
       { userId: memberId },
       { userId: adminId },
       { userId: platformAdminId },
       { userId: otherMemberId },
       { userId: otherAdminId },
     ] = users;
+
+    member = { id: memberId, email: '', isPlatformAdmin: false };
+    admin = { id: adminId, email: '', isPlatformAdmin: false };
+    platformAdmin = { id: platformAdminId, email: '', isPlatformAdmin: true };
+    otherMember = { id: otherMemberId, email: '', isPlatformAdmin: false };
+    otherAdmin = { id: otherAdminId, email: '', isPlatformAdmin: false };
 
     await db.insert(usersOrganizationsTable).values([
       { userId: memberId, organizationId, permission: 'member' },
@@ -93,31 +100,31 @@ describe('Authorization middleware', () => {
 
   describe('isUserAuthorizedForOrganization', () => {
     test('should return true if is authorized, false otherwise', async () => {
-      expect(await isUserAuthorizedForOrganization(otherMemberId, organizationId)).toEqual(false);
-      expect(await isUserAuthorizedForOrganization(otherAdminId, organizationId)).toEqual(false);
-      expect(await isUserAuthorizedForOrganization(memberId, organizationId)).toEqual(true);
-      expect(await isUserAuthorizedForOrganization(adminId, organizationId)).toEqual(true);
-      expect(await isUserAuthorizedForOrganization(platformAdminId, organizationId)).toEqual(true);
+      expect(await isUserAuthorizedForOrganization(otherMember, organizationId)).toEqual(false);
+      expect(await isUserAuthorizedForOrganization(otherAdmin, organizationId)).toEqual(false);
+      expect(await isUserAuthorizedForOrganization(member, organizationId)).toEqual(true);
+      expect(await isUserAuthorizedForOrganization(admin, organizationId)).toEqual(true);
+      expect(await isUserAuthorizedForOrganization(platformAdmin, organizationId)).toEqual(true);
     });
   });
 
   describe('isUserAdminForOrganization', () => {
     test('should return true if is admin, false otherwise', async () => {
-      expect(await isUserAdminForOrganization(otherMemberId, organizationId)).toEqual(false);
-      expect(await isUserAdminForOrganization(otherAdminId, organizationId)).toEqual(false);
-      expect(await isUserAdminForOrganization(memberId, organizationId)).toEqual(false);
-      expect(await isUserAdminForOrganization(adminId, organizationId)).toEqual(true);
-      expect(await isUserAdminForOrganization(platformAdminId, organizationId)).toEqual(true);
+      expect(await isUserAdminForOrganization(otherMember, organizationId)).toEqual(false);
+      expect(await isUserAdminForOrganization(otherAdmin, organizationId)).toEqual(false);
+      expect(await isUserAdminForOrganization(member, organizationId)).toEqual(false);
+      expect(await isUserAdminForOrganization(admin, organizationId)).toEqual(true);
+      expect(await isUserAdminForOrganization(platformAdmin, organizationId)).toEqual(true);
     });
   });
 
   describe('isUserPlatformAdmin', () => {
     test('should return true if is platform admin, false otherwise', async () => {
-      expect(await isUserPlatformAdmin(otherMemberId)).toEqual(false);
-      expect(await isUserPlatformAdmin(otherAdminId)).toEqual(false);
-      expect(await isUserPlatformAdmin(memberId)).toEqual(false);
-      expect(await isUserPlatformAdmin(adminId)).toEqual(false);
-      expect(await isUserPlatformAdmin(platformAdminId)).toEqual(true);
+      expect(isUserPlatformAdmin(otherMember)).toEqual(false);
+      expect(isUserPlatformAdmin(otherAdmin)).toEqual(false);
+      expect(isUserPlatformAdmin(member)).toEqual(false);
+      expect(isUserPlatformAdmin(admin)).toEqual(false);
+      expect(isUserPlatformAdmin(platformAdmin)).toEqual(true);
     });
   });
 });

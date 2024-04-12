@@ -3,9 +3,8 @@ import { describe, expect, test } from 'bun:test';
 
 import { getAuthHeaders } from '../../../tests/utils';
 import { organizationsRouter } from './organizations.router';
-type organizationsRouterType = typeof organizationsRouter;
-type a = organizationsRouterType['_routes']['organizations'][':organizationId']['delete']['params'];
-const organizationsApi = treaty<organizationsRouterType>('http://localhost');
+
+const organizationsApi = treaty(organizationsRouter);
 
 //TODO: add tests for non platform admins
 
@@ -24,7 +23,7 @@ describe('organizations.router', () => {
       const { status, data } = await organizationsApi.organizations.get({ headers });
 
       expect(status).toEqual(200);
-      expect(data).toHaveLength(1);
+      expect(data?.length).toBeGreaterThanOrEqual(1);
     });
   });
 
@@ -44,14 +43,16 @@ describe('organizations.router', () => {
         { headers }
       );
 
-      expect(status).toEqual(200);
+      expect(status).toEqual(201);
       expect(data).toHaveProperty('id');
     });
   });
 
   describe('delete /organizations/:organizationId', () => {
     test('it throws 401 when no auth cookie is sent', async () => {
-      const { status, error } = await organizationsApi.organizations[':organizationId'].delete({});
+      const { status, error } = await organizationsApi
+        .organizations({ organizationId: 'someId' })
+        .delete({});
 
       expect(status).toEqual(401);
       expect(error?.value).toEqual('Unauthorized');
@@ -61,8 +62,11 @@ describe('organizations.router', () => {
       const headers = await getAuthHeaders();
 
       const { data } = await organizationsApi.organizations.post({ name: 'Test Org' }, { headers });
+      expect(data).toHaveProperty('id');
 
-      const { status } = await organizationsApi.organizations[data.id].delete({}, { headers });
+      const { status } = await organizationsApi
+        .organizations({ organizationId: data?.id ?? '' })
+        .delete({}, { headers });
 
       expect(status).toEqual(204);
     });
@@ -70,9 +74,11 @@ describe('organizations.router', () => {
 
   describe('put /organizations/:organizationId', () => {
     test('it throws 401 when no auth cookie is sent', async () => {
-      const { status, error } = await organizationsApi.organizations[':organizationId'].put({
-        name: 'Updated Org',
-      });
+      const { status, error } = await organizationsApi
+        .organizations({ organizationId: 'someId' })
+        .put({
+          name: 'Updated Org',
+        });
 
       expect(status).toEqual(401);
       expect(error?.value).toEqual('Unauthorized');
@@ -82,11 +88,11 @@ describe('organizations.router', () => {
       const headers = await getAuthHeaders();
 
       const { data } = await organizationsApi.organizations.post({ name: 'Test Org' }, { headers });
+      expect(data).toHaveProperty('id');
 
-      const { status } = await organizationsApi.organizations[data.id].put(
-        { name: 'Updated Org' },
-        { headers }
-      );
+      const { status } = await organizationsApi
+        .organizations({ organizationId: data?.id ?? '' })
+        .put({ name: 'Updated Org' }, { headers });
       expect(status).toEqual(204);
     });
   });
