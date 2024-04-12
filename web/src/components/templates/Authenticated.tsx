@@ -5,7 +5,7 @@ import Box from '@mui/material/Box';
 import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 
-import PracticeContextProvider from '../../contexts/OrganizationContext';
+import { OrganizationContextProvider } from '../../contexts/OrganizationContext';
 import { Copyright } from '../Copyright';
 import { Header } from '../Header';
 import { SideNav } from '../SideNav';
@@ -17,7 +17,7 @@ export const Authenticated = () => {
   };
 
   return (
-    <PracticeContextProvider>
+    <OrganizationContextProvider>
       <Box sx={{ display: 'flex' }}>
         <Header open={open} toggleDrawer={toggleDrawer} />
         <SideNav open={open} toggleDrawer={toggleDrawer} />
@@ -38,6 +38,6 @@ export const Authenticated = () => {
           </Container>
         </Box>
       </Box>
-    </PracticeContextProvider>
+    </OrganizationContextProvider>
   );
 };

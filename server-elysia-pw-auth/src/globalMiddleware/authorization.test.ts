@@ -4,7 +4,7 @@ import { organizationsTable, usersOrganizationsTable, usersTable } from '../sche
 import {
   isUserAdminForOrganization,
   isUserAuthorizedForOrganization,
-  isUserProductAdmin,
+  isUserPlatformAdmin,
 } from './authorization';
 import db from './db';
 
@@ -13,7 +13,7 @@ describe('Authorization middleware', () => {
   let otherOrgId: string;
   let memberId: string;
   let adminId: string;
-  let productAdminId: string;
+  let platformAdminId: string;
   let otherMemberId: string;
   let otherAdminId: string;
 
@@ -38,9 +38,9 @@ describe('Authorization middleware', () => {
         name: 'admin',
       },
       {
-        email: 'product.admin@org.com',
+        email: 'platform.admin@org.com',
         hashedPassword: 'hashedPassword',
-        name: 'product admin',
+        name: 'platform admin',
         isPlatformAdmin: true,
       },
       {
@@ -68,7 +68,7 @@ describe('Authorization middleware', () => {
     [
       { userId: memberId },
       { userId: adminId },
-      { userId: productAdminId },
+      { userId: platformAdminId },
       { userId: otherMemberId },
       { userId: otherAdminId },
     ] = users;
@@ -82,13 +82,13 @@ describe('Authorization middleware', () => {
   });
 
   /* Access Table
-  | user            | Product Admin | Admin Access | Org Access |
-  |-----------------|---------------|--------------|------------|
-  | otherMember     |      🛑       |      🛑      |     🛑     |
-  | otherAdmin      |      🛑       |      🛑      |     🛑     |
-  | member          |      🛑       |      🛑      |     ✅     |
-  | admin           |      🛑       |      ✅      |     ✅     |
-  | productAdmin    |      ✅       |      ✅      |     ✅     |
+  | user            | Platform Admin | Admin Access | Org Access |
+  |-----------------|----------------|--------------|------------|
+  | otherMember     |       🛑       |      🛑      |     🛑     |
+  | otherAdmin      |       🛑       |      🛑      |     🛑     |
+  | member          |       🛑       |      🛑      |     ✅     |
+  | admin           |       🛑       |      ✅      |     ✅     |
+  | platformAdmin   |       ✅       |      ✅      |     ✅     |
   */
 
   describe('isUserAuthorizedForOrganization', () => {
@@ -97,7 +97,7 @@ describe('Authorization middleware', () => {
       expect(await isUserAuthorizedForOrganization(otherAdminId, organizationId)).toEqual(false);
       expect(await isUserAuthorizedForOrganization(memberId, organizationId)).toEqual(true);
       expect(await isUserAuthorizedForOrganization(adminId, organizationId)).toEqual(true);
-      expect(await isUserAuthorizedForOrganization(productAdminId, organizationId)).toEqual(true);
+      expect(await isUserAuthorizedForOrganization(platformAdminId, organizationId)).toEqual(true);
     });
   });
 
@@ -107,17 +107,17 @@ describe('Authorization middleware', () => {
       expect(await isUserAdminForOrganization(otherAdminId, organizationId)).toEqual(false);
       expect(await isUserAdminForOrganization(memberId, organizationId)).toEqual(false);
       expect(await isUserAdminForOrganization(adminId, organizationId)).toEqual(true);
-      expect(await isUserAdminForOrganization(productAdminId, organizationId)).toEqual(true);
+      expect(await isUserAdminForOrganization(platformAdminId, organizationId)).toEqual(true);
     });
   });
 
-  describe('isUserProductAdmin', () => {
-    test('should return true if is product admin, false otherwise', async () => {
-      expect(await isUserProductAdmin(otherMemberId)).toEqual(false);
-      expect(await isUserProductAdmin(otherAdminId)).toEqual(false);
-      expect(await isUserProductAdmin(memberId)).toEqual(false);
-      expect(await isUserProductAdmin(adminId)).toEqual(false);
-      expect(await isUserProductAdmin(productAdminId)).toEqual(true);
+  describe('isUserPlatformAdmin', () => {
+    test('should return true if is platform admin, false otherwise', async () => {
+      expect(await isUserPlatformAdmin(otherMemberId)).toEqual(false);
+      expect(await isUserPlatformAdmin(otherAdminId)).toEqual(false);
+      expect(await isUserPlatformAdmin(memberId)).toEqual(false);
+      expect(await isUserPlatformAdmin(adminId)).toEqual(false);
+      expect(await isUserPlatformAdmin(platformAdminId)).toEqual(true);
     });
   });
 });

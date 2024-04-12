@@ -18,9 +18,12 @@ export const signUpUserSchema = t.Composite([
   t.Object({ name: t.String({ minLength: 1, error: 'Invalid name' }) }),
 ]);
 
+export const updateUserSchema = t.Pick(selectUserSchema, ['name']);
+
 export type User = Static<typeof selectUserSchema>;
 export type LoginUser = Static<typeof loginUserSchema>;
 export type SignUpUser = Static<typeof signUpUserSchema>;
+export type UpdateUser = Static<typeof updateUserSchema>;
 
 export const findUserByEmail = (email: User['email']) => {
   return db.query.usersTable.findFirst({
@@ -52,4 +55,8 @@ export const createUser = async ({ email, password, name }: SignUpUser) => {
     .returning({ userId: usersTable.id });
 
   return userId;
+};
+
+export const updateUser = (userId: User['id'], { name }: UpdateUser) => {
+  return db.update(usersTable).set({ name }).where(eq(usersTable.id, userId));
 };

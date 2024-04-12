@@ -35,7 +35,7 @@ export const signout = async () => {
 export const checkAuth = async () => {
   const { data, status } = await authenticatedClient.api.users.me.get();
 
-  if (status !== 200 || !data?.user) {
+  if (status !== 200 || !data?.id) {
     return false;
   }
 

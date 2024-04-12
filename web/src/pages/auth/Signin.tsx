@@ -5,13 +5,13 @@ import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import { FormEvent, useContext } from 'react';
+import { type FormEvent } from 'react';
 
 import { LinkStyled } from '../../components/LinkStyled';
-import { AuthenticationContext } from '../../contexts/AuthenticationContext';
+import { useAuthenticationContext } from '../../contexts/useAuthenticationContext';
 
 export default function Signin() {
-  const { signIn } = useContext(AuthenticationContext);
+  const { signIn } = useAuthenticationContext();
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);

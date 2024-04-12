@@ -6,6 +6,7 @@ import { GlobalProviders } from './GlobalProviders';
 import Signin from './pages/auth/Signin';
 import { Signout } from './pages/auth/Signout';
 import Signup from './pages/auth/Signup';
+import { OrganizationCreate } from './pages/organizations/OrganizationCreate';
 import { Organizations } from './pages/organizations/Organizations';
 
 export const router = createBrowserRouter([
@@ -35,8 +36,12 @@ export const router = createBrowserRouter([
         element: <Authenticated />,
         children: [
           {
-            path: 'practices',
+            path: 'organizations',
             element: <Organizations />,
+          },
+          {
+            path: 'organizations/create',
+            element: <OrganizationCreate />,
           },
           { path: 'signout', element: <Signout /> },
         ],

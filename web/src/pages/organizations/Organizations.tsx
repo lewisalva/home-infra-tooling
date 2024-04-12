@@ -1,14 +1,14 @@
+import { Button, Container } from '@mui/material';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Grid from '@mui/material/Grid';
 import Skeleton from '@mui/material/Skeleton';
+import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { useContext } from 'react';
 
-import {
-  OrganizationContext,
-  type OrganizationContextType,
-} from '../../contexts/OrganizationContext';
+import { LinkUnstyled } from '../../components/LinkUnstyled';
+import { type OrganizationContextType } from '../../contexts/OrganizationContext';
+import { useOrganizationContext } from '../../contexts/useOrganizationContext';
 
 type OrganizationCardProps = {
   isSelected?: boolean;
@@ -56,24 +56,35 @@ const OrganizationCard = ({
 
 export const Organizations = () => {
   const { organizations, selectedOrganizationId, setSelectedOrganization } =
-    useContext(OrganizationContext);
+    useOrganizationContext();
+
   return (
-    <Grid container>
-      {organizations.length === 0 && (
-        <Typography variant="h6" component="p">
-          No organizations found. Please contact your administrator.
-        </Typography>
-      )}
-      {organizations.map(({ organization }) => (
-        <Grid item xs={3} key={organization.id}>
-          <OrganizationCard
-            organizationName={organization.name}
-            organizationId={organization.id}
-            setSelectedOrganization={setSelectedOrganization}
-            isSelected={selectedOrganizationId === organization.id}
-          />
-        </Grid>
-      ))}
-    </Grid>
+    <Stack>
+      <Stack justifyContent="space-between" direction="row">
+        <Typography variant="h4">Organizations</Typography>
+        <LinkUnstyled to="/portal/organizations/create">
+          <Button variant="contained" color="primary">
+            Create Organization
+          </Button>
+        </LinkUnstyled>
+      </Stack>
+      <Grid container>
+        {organizations.length === 0 && (
+          <Typography variant="body1" component="p">
+            No organizations found. Please contact your administrator.
+          </Typography>
+        )}
+        {organizations.map((organization) => (
+          <Grid item xs={3} key={organization.id}>
+            <OrganizationCard
+              organizationName={organization.name}
+              organizationId={organization.id}
+              setSelectedOrganization={setSelectedOrganization}
+              isSelected={selectedOrganizationId === organization.id}
+            />
+          </Grid>
+        ))}
+      </Grid>
+    </Stack>
   );
 };

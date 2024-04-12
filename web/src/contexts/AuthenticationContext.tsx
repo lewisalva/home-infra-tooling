@@ -14,14 +14,9 @@ type Props = {
   children: React.ReactNode;
 };
 
-export const AuthenticationContext = createContext<AuthenticationContextType>({
-  isLoggedIn: false,
-  signIn: () => {},
-  signUp: () => {},
-  signOut: () => {},
-});
+export const AuthenticationContext = createContext<AuthenticationContextType | null>(null);
 
-const AuthenticationContextProvider = ({ children }: Props) => {
+export const AuthenticationContextProvider = ({ children }: Props) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [shouldLoad, setShouldLoad] = useState(false);
   const navigate = useNavigate();
@@ -64,7 +59,7 @@ const AuthenticationContextProvider = ({ children }: Props) => {
     }
 
     if (isLoggedIn && !location.pathname.includes('portal')) {
-      navigate('/portal/practices');
+      navigate('/portal/organizations');
     } else if (!isLoggedIn && location.pathname.includes('portal')) {
       navigate('/signin');
     }
@@ -81,5 +76,3 @@ const AuthenticationContextProvider = ({ children }: Props) => {
     <AuthenticationContext.Provider value={defaultValue}>{children}</AuthenticationContext.Provider>
   );
 };
-
-export default AuthenticationContextProvider;

@@ -1,5 +1,5 @@
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
+import Home from '@mui/icons-material/Home';
 import LogoutIcon from '@mui/icons-material/Logout';
 import Divider from '@mui/material/Divider';
 import MuiDrawer from '@mui/material/Drawer';
@@ -10,10 +10,9 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import { styled } from '@mui/material/styles';
 import Toolbar from '@mui/material/Toolbar';
-// import { useContext } from 'react';
 import { useLocation } from 'react-router-dom';
 
-// import { PracticeContext } from '../contexts/PracticeContext';
+// import { useOrganizationContext } from '../contexts/useOrganizationContext';
 import { LinkUnstyled } from './LinkUnstyled';
 
 export const drawerWidth = 240;
@@ -45,7 +44,7 @@ const Drawer = styled(MuiDrawer, {
 }));
 
 export const SideNav = ({ open, toggleDrawer }: { open: boolean; toggleDrawer: () => void }) => {
-  // const { selectedPracticeId } = useContext(PracticeContext);
+  // const { selectedOrganizationId } = useOrganizationContext();
   const { pathname } = useLocation();
 
   return (
@@ -64,10 +63,10 @@ export const SideNav = ({ open, toggleDrawer }: { open: boolean; toggleDrawer: (
       </Toolbar>
       <Divider />
       <List component="nav">
-        <LinkUnstyled to="/">
+        <LinkUnstyled to="/portal/organizations">
           <ListItemButton selected={pathname.includes('/')}>
             <ListItemIcon>
-              <LocalHospitalIcon />
+              <Home />
             </ListItemIcon>
             <ListItemText primary="Home" />
           </ListItemButton>

@@ -1,7 +1,7 @@
 import { DrizzlePostgreSQLAdapter } from '@lucia-auth/adapter-drizzle';
 import { Elysia, error } from 'elysia';
 import type { Session, User } from 'lucia';
-import { Lucia /*, verifyRequestOrigin*/ } from 'lucia';
+import { Lucia, verifyRequestOrigin } from 'lucia';
 
 import { sessionsTable, usersTable } from '../schema';
 import db from './db';
@@ -18,6 +18,7 @@ export const lucia = new Lucia(adapter, {
   getUserAttributes: (attributes) => {
     return {
       email: attributes.email,
+      isPlatformAdmin: attributes.isPlatformAdmin,
     };
   },
 });
@@ -27,6 +28,7 @@ declare module 'lucia' {
     Lucia: typeof lucia;
     DatabaseUserAttributes: {
       email: string;
+      isPlatformAdmin: boolean;
     };
   }
 }
@@ -40,18 +42,16 @@ export const ensureAuthentication = new Elysia()
       user: User | null;
       session: Session | null;
     }> => {
-      // if (context.request.method !== 'GET') {
-      //   const originHeader = context.request.headers.get('Origin');
-      //   // NOTE: You may need to use `X-Forwarded-Host` instead
-      //   const hostHeader = context.request.headers.get('Host');
-      //   console.log({ originHeader, hostHeader });
-      //   if (!originHeader || !hostHeader || !verifyRequestOrigin(originHeader, [hostHeader])) {
-      //     return {
-      //       user: null,
-      //       session: null,
-      //     };
-      //   }
-      // }
+      if (context.request.method !== 'GET') {
+        const originHeader = context.request.headers.get('Origin');
+        const hostHeader = context.request.headers.get('Host');
+        if (!originHeader || !hostHeader || !verifyRequestOrigin(originHeader, [hostHeader])) {
+          return {
+            user: null,
+            session: null,
+          };
+        }
+      }
 
       const cookieHeader = context.request.headers.get('Cookie') ?? '';
       const sessionId = lucia.readSessionCookie(cookieHeader);

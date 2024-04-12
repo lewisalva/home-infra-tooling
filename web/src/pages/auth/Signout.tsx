@@ -1,10 +1,10 @@
 import CircularProgress from '@mui/material/CircularProgress';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import { AuthenticationContext } from '../../contexts/AuthenticationContext';
+import { useAuthenticationContext } from '../../contexts/useAuthenticationContext';
 
 export const Signout = () => {
-  const { signOut } = useContext(AuthenticationContext);
+  const { signOut } = useAuthenticationContext();
   const [shouldSignOut, setShouldSignOut] = useState(false);
 
   useEffect(() => {

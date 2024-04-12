@@ -1,13 +1,10 @@
 import { and, eq } from 'drizzle-orm';
+import { User } from 'lucia';
 
-import { usersOrganizationsTable, usersTable } from '../schema';
+import { usersOrganizationsTable } from '../schema';
 import db from './db';
 
 type UserOrganization = (typeof usersOrganizationsTable)['$inferSelect'];
-
-const fetchUser = (userId: UserOrganization['userId']) => {
-  return db.query.usersTable.findFirst({ where: eq(usersTable.id, userId) });
-};
 
 const fetchUserInOrganization = ({
   userId,
@@ -35,33 +32,36 @@ const fetchUserInOrganization = ({
   });
 };
 
-export const isUserProductAdmin = async (userId: UserOrganization['userId']): Promise<boolean> => {
-  const user = await fetchUser(userId);
-  return user?.isPlatformAdmin ?? false;
+export const isUserPlatformAdmin = (user: User): boolean => {
+  return user.isPlatformAdmin;
 };
 
 export const isUserAuthorizedForOrganization = async (
-  userId: UserOrganization['userId'],
+  user: User,
   organizationId: UserOrganization['organizationId']
 ): Promise<boolean> => {
-  if (await isUserProductAdmin(userId)) {
+  if (isUserPlatformAdmin(user)) {
     return true;
   }
 
-  const result = await fetchUserInOrganization({ userId, organizationId });
+  const result = await fetchUserInOrganization({ userId: user.id, organizationId });
 
   return result !== undefined;
 };
 
 export const isUserAdminForOrganization = async (
-  userId: UserOrganization['userId'],
+  user: User,
   organizationId: UserOrganization['organizationId']
 ): Promise<boolean> => {
-  if (await isUserProductAdmin(userId)) {
+  if (isUserPlatformAdmin(user)) {
     return true;
   }
 
-  const result = await fetchUserInOrganization({ userId, organizationId, shouldCheckAdmin: true });
+  const result = await fetchUserInOrganization({
+    userId: user.id,
+    organizationId,
+    shouldCheckAdmin: true,
+  });
 
   return result !== undefined;
 };
