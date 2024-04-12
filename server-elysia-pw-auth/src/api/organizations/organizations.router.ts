@@ -1,10 +1,7 @@
-import { Elysia, error } from 'elysia';
+import { Elysia } from 'elysia';
 
 import { ensureAuthentication } from '../../globalMiddleware/authentication';
-import {
-  isUserAdminForOrganization,
-  isUserPlatformAdmin,
-} from '../../globalMiddleware/authorization';
+import { isUserAdminForOrganization } from '../../globalMiddleware/authorization';
 import {
   createOrganization,
   createOrganizationSchema,
@@ -21,7 +18,7 @@ export const organizationsRouter = new Elysia({ prefix: '/organizations' })
   .group(
     '/:organizationId',
     {
-      beforeHandle: async ({ params, user }) => {
+      beforeHandle: async ({ error, params, user }) => {
         const isOrganizationAdmin = await isUserAdminForOrganization(user, params.organizationId);
         if (!isOrganizationAdmin) {
           return error(401);
@@ -43,12 +40,7 @@ export const organizationsRouter = new Elysia({ prefix: '/organizations' })
   .group(
     '',
     {
-      beforeHandle: ({ user }) => {
-        const isPlatformAdmin = isUserPlatformAdmin(user);
-        if (!isPlatformAdmin) {
-          return error(401);
-        }
-      },
+      ensurePlatformAdmin: true,
     },
     (app) =>
       app

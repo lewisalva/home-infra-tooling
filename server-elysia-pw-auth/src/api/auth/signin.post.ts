@@ -1,10 +1,10 @@
-import { Elysia, error } from 'elysia';
+import { Elysia } from 'elysia';
 
 import { checkUserPassword, createSessionCookie, loginUserSchema } from '../../models/User';
 
 export const signinPost = new Elysia().post(
   '/signin',
-  async ({ body: { email, password }, cookie, set }) => {
+  async ({ body: { email, password }, cookie, error, set }) => {
     const user = await checkUserPassword({ email, password });
 
     if (!user) {

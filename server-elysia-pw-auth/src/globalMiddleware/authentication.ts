@@ -1,5 +1,5 @@
 import { DrizzlePostgreSQLAdapter } from '@lucia-auth/adapter-drizzle';
-import { Elysia, error } from 'elysia';
+import { Elysia } from 'elysia';
 import type { Session, User } from 'lucia';
 import { Lucia, verifyRequestOrigin } from 'lucia';
 
@@ -83,7 +83,7 @@ export const ensureAuthentication = new Elysia()
       };
     }
   )
-  .onBeforeHandle({ as: 'scoped' }, ({ user }) => {
+  .onBeforeHandle({ as: 'scoped' }, ({ error, user }) => {
     if (user === null) {
       return error('Unauthorized');
     }
@@ -103,4 +103,13 @@ export const ensureAuthentication = new Elysia()
         session: context.session!,
       };
     }
-  );
+  )
+  .macro(({ onBeforeHandle }) => ({
+    ensurePlatformAdmin(_value: boolean) {
+      onBeforeHandle(({ user, error }) => {
+        if (!user?.isPlatformAdmin) {
+          return error(401);
+        }
+      });
+    },
+  }));
