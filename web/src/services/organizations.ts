@@ -26,8 +26,8 @@ export const postOrganization = async (body: OrganizationCreateType) => {
   return data?.id;
 };
 
-export const putOrganization = async (id: string, body: OrganizationUpdateType) => {
-  const { status } = await authenticatedClient.api.organizations[id].put(body);
+export const putOrganization = async (organizationId: string, body: OrganizationUpdateType) => {
+  const { status } = await authenticatedClient.api.organizations({ organizationId }).put(body);
 
   if (status !== 204) {
     return false;

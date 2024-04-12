@@ -1,10 +1,10 @@
-import { edenTreaty } from '@elysiajs/eden';
+import { treaty } from '@elysiajs/eden';
 
 import type { API } from '../../../server-elysia-pw-auth/src/index';
 
-export const client = edenTreaty<API>('/');
-export const authenticatedClient = edenTreaty<API>('/', {
-  $fetch: { credentials: 'include' },
+export const client = treaty<API>('/');
+export const authenticatedClient = treaty<API>('/', {
+  fetch: { credentials: 'include' },
 });
 
 export type Schema = API['_routes'];
