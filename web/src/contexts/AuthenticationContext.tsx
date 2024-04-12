@@ -1,7 +1,8 @@
 import { createContext, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import { checkAuth, signin, signout, signup } from '../services/auth';
+import { signin, signout, signup } from '../services/auth';
+import { getUser } from '../services/users';
 
 export type AuthenticationContextType = {
   isLoggedIn: boolean;
@@ -47,7 +48,7 @@ export const AuthenticationContextProvider = ({ children }: Props) => {
   useEffect(() => {
     if (shouldLoad) {
       setShouldLoad(false);
-      checkAuth().then((isUserLoggedIn) => {
+      getUser().then((isUserLoggedIn) => {
         setIsLoggedIn(isUserLoggedIn);
       });
     }
