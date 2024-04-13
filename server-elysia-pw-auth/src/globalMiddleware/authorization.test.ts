@@ -1,91 +1,21 @@
 import { beforeAll, describe, expect, test } from 'bun:test';
-import { User } from 'lucia';
 
-import { organizationsTable, usersOrganizationsTable, usersTable } from '../schema';
+import {
+  generateUsersAndOrgsForTest,
+  GenerateUsersAndOrgsType,
+  toSimpleUser,
+} from '../../tests/utils';
 import {
   isUserAdminForOrganization,
   isUserAuthorizedForOrganization,
   isUserPlatformAdmin,
 } from './authorization';
-import db from './db';
 
 describe('Authorization middleware', () => {
-  let organizationId: string;
-  let otherOrgId: string;
-  let member: User;
-  let admin: User;
-  let platformAdmin: User;
-  let otherMember: User;
-  let otherAdmin: User;
+  let generatedData: GenerateUsersAndOrgsType;
 
   beforeAll(async () => {
-    const organizationData = [
-      {
-        name: 'Test: Authorization middleware',
-      },
-      {
-        name: 'Test: Authorization middleware - Other Org',
-      },
-    ];
-    const usersData = [
-      {
-        email: 'member@org.com',
-        hashedPassword: 'hashedPassword',
-        name: 'member',
-      },
-      {
-        email: 'admin@org.com',
-        hashedPassword: 'hashedPassword',
-        name: 'admin',
-      },
-      {
-        email: 'platform.admin@org.com',
-        hashedPassword: 'hashedPassword',
-        name: 'platform admin',
-        isPlatformAdmin: true,
-      },
-      {
-        email: 'otherMember@org.com',
-        hashedPassword: 'hashedPassword',
-        name: 'otherMember',
-      },
-      {
-        email: 'otherAdmin@org.com',
-        hashedPassword: 'hashedPassword',
-        name: 'otherAdmin',
-      },
-    ];
-
-    [{ organizationId }, { organizationId: otherOrgId }] = await db
-      .insert(organizationsTable)
-      .values(organizationData)
-      .returning({ organizationId: organizationsTable.id });
-
-    const users = await db
-      .insert(usersTable)
-      .values(usersData)
-      .returning({ userId: usersTable.id });
-
-    const [
-      { userId: memberId },
-      { userId: adminId },
-      { userId: platformAdminId },
-      { userId: otherMemberId },
-      { userId: otherAdminId },
-    ] = users;
-
-    member = { id: memberId, email: '', isPlatformAdmin: false };
-    admin = { id: adminId, email: '', isPlatformAdmin: false };
-    platformAdmin = { id: platformAdminId, email: '', isPlatformAdmin: true };
-    otherMember = { id: otherMemberId, email: '', isPlatformAdmin: false };
-    otherAdmin = { id: otherAdminId, email: '', isPlatformAdmin: false };
-
-    await db.insert(usersOrganizationsTable).values([
-      { userId: memberId, organizationId, permission: 'member' },
-      { userId: adminId, organizationId, permission: 'admin' },
-      { userId: otherMemberId, organizationId: otherOrgId, permission: 'member' },
-      { userId: otherAdminId, organizationId: otherOrgId, permission: 'admin' },
-    ]);
+    generatedData = await generateUsersAndOrgsForTest('authorization.middleware');
   });
 
   /* Access Table
@@ -100,31 +30,81 @@ describe('Authorization middleware', () => {
 
   describe('isUserAuthorizedForOrganization', () => {
     test('should return true if is authorized, false otherwise', async () => {
-      expect(await isUserAuthorizedForOrganization(otherMember, organizationId)).toEqual(false);
-      expect(await isUserAuthorizedForOrganization(otherAdmin, organizationId)).toEqual(false);
-      expect(await isUserAuthorizedForOrganization(member, organizationId)).toEqual(true);
-      expect(await isUserAuthorizedForOrganization(admin, organizationId)).toEqual(true);
-      expect(await isUserAuthorizedForOrganization(platformAdmin, organizationId)).toEqual(true);
+      expect(
+        await isUserAuthorizedForOrganization(
+          toSimpleUser(generatedData.users.otherOrgMember),
+          generatedData.orgs.organization.id
+        )
+      ).toEqual(false);
+      expect(
+        await isUserAuthorizedForOrganization(
+          toSimpleUser(generatedData.users.otherOrgAdmin),
+          generatedData.orgs.organization.id
+        )
+      ).toEqual(false);
+      expect(
+        await isUserAuthorizedForOrganization(
+          toSimpleUser(generatedData.users.member),
+          generatedData.orgs.organization.id
+        )
+      ).toEqual(true);
+      expect(
+        await isUserAuthorizedForOrganization(
+          toSimpleUser(generatedData.users.admin),
+          generatedData.orgs.organization.id
+        )
+      ).toEqual(true);
+      expect(
+        await isUserAuthorizedForOrganization(
+          toSimpleUser(generatedData.users.platformAdmin),
+          generatedData.orgs.organization.id
+        )
+      ).toEqual(true);
     });
   });
 
   describe('isUserAdminForOrganization', () => {
     test('should return true if is admin, false otherwise', async () => {
-      expect(await isUserAdminForOrganization(otherMember, organizationId)).toEqual(false);
-      expect(await isUserAdminForOrganization(otherAdmin, organizationId)).toEqual(false);
-      expect(await isUserAdminForOrganization(member, organizationId)).toEqual(false);
-      expect(await isUserAdminForOrganization(admin, organizationId)).toEqual(true);
-      expect(await isUserAdminForOrganization(platformAdmin, organizationId)).toEqual(true);
+      expect(
+        await isUserAdminForOrganization(
+          toSimpleUser(generatedData.users.otherOrgMember),
+          generatedData.orgs.organization.id
+        )
+      ).toEqual(false);
+      expect(
+        await isUserAdminForOrganization(
+          toSimpleUser(generatedData.users.otherOrgAdmin),
+          generatedData.orgs.organization.id
+        )
+      ).toEqual(false);
+      expect(
+        await isUserAdminForOrganization(
+          toSimpleUser(generatedData.users.member),
+          generatedData.orgs.organization.id
+        )
+      ).toEqual(false);
+      expect(
+        await isUserAdminForOrganization(
+          toSimpleUser(generatedData.users.admin),
+          generatedData.orgs.organization.id
+        )
+      ).toEqual(true);
+      expect(
+        await isUserAdminForOrganization(
+          toSimpleUser(generatedData.users.platformAdmin),
+          generatedData.orgs.organization.id
+        )
+      ).toEqual(true);
     });
   });
 
   describe('isUserPlatformAdmin', () => {
     test('should return true if is platform admin, false otherwise', async () => {
-      expect(isUserPlatformAdmin(otherMember)).toEqual(false);
-      expect(isUserPlatformAdmin(otherAdmin)).toEqual(false);
-      expect(isUserPlatformAdmin(member)).toEqual(false);
-      expect(isUserPlatformAdmin(admin)).toEqual(false);
-      expect(isUserPlatformAdmin(platformAdmin)).toEqual(true);
+      expect(isUserPlatformAdmin(toSimpleUser(generatedData.users.otherOrgMember))).toEqual(false);
+      expect(isUserPlatformAdmin(toSimpleUser(generatedData.users.otherOrgAdmin))).toEqual(false);
+      expect(isUserPlatformAdmin(toSimpleUser(generatedData.users.member))).toEqual(false);
+      expect(isUserPlatformAdmin(toSimpleUser(generatedData.users.admin))).toEqual(false);
+      expect(isUserPlatformAdmin(toSimpleUser(generatedData.users.platformAdmin))).toEqual(true);
     });
   });
 });

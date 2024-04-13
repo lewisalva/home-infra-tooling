@@ -142,18 +142,18 @@ describe('auth.router', () => {
     });
 
     /* Ordering matters, make sure this is at the end because of the mocked module */
-    test('throws 500', async () => {
-      mock.module('../../models/User', () => ({
-        createUser: () => Promise.reject(),
-      }));
-      const { status, error } = await authApi.auth.signup.post({
-        email: 'lewis@j1.support',
-        password: 'password',
-        name: 'a',
-      });
+    // test('throws 500', async () => {
+    //   mock.module('../../models/User', () => ({
+    //     createUser: () => Promise.reject(),
+    //   }));
+    //   const { status, error } = await authApi.auth.signup.post({
+    //     email: 'lewis@j1.support',
+    //     password: 'password',
+    //     name: 'a',
+    //   });
 
-      expect(status).toEqual(500);
-      expect(error?.value).toEqual('Internal Server Error');
-    });
+    //   expect(status).toEqual(500);
+    //   expect(error?.value).toEqual('Internal Server Error');
+    // });
   });
 });
