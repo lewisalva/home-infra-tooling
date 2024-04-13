@@ -85,7 +85,7 @@ export const ensureAuthentication = new Elysia()
   )
   .onBeforeHandle({ as: 'scoped' }, ({ error, user }) => {
     if (user === null) {
-      return error('Unauthorized');
+      return error(401);
     }
   })
   .derive(
