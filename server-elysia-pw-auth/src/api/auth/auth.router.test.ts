@@ -1,11 +1,16 @@
 import { treaty } from '@elysiajs/eden';
-import { describe, expect, mock, test } from 'bun:test';
+import { afterEach, describe, expect, jest, mock, spyOn, test } from 'bun:test';
 
+import * as UserModel from '../../models/User';
 import { authRouter } from './auth.router';
 
 const authApi = treaty(authRouter);
 
 describe('auth.router', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   test('it should be defined', () => {
     expect(authRouter).toBeDefined();
   });
@@ -141,19 +146,17 @@ describe('auth.router', () => {
       expect(cookie).toHaveLength(1);
     });
 
-    /* Ordering matters, make sure this is at the end because of the mocked module */
-    // test('throws 500', async () => {
-    //   mock.module('../../models/User', () => ({
-    //     createUser: () => Promise.reject(),
-    //   }));
-    //   const { status, error } = await authApi.auth.signup.post({
-    //     email: 'lewis@j1.support',
-    //     password: 'password',
-    //     name: 'a',
-    //   });
+    test('throws 500', async () => {
+      spyOn(UserModel, 'createUser').mockImplementationOnce(() => Promise.reject());
 
-    //   expect(status).toEqual(500);
-    //   expect(error?.value).toEqual('Internal Server Error');
-    // });
+      const { status, error } = await authApi.auth.signup.post({
+        email: 'lewis@j1.support',
+        password: 'password',
+        name: 'a',
+      });
+
+      expect(status).toEqual(500);
+      expect(error?.value).toEqual('Internal Server Error');
+    });
   });
 });
