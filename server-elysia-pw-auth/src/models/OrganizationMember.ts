@@ -17,7 +17,6 @@ export type UpdateUserOrganization = CreateUserOrganization;
 export type DeleteUserOrganization = Omit<CreateUserOrganization, 'permission'>;
 
 export const addUserToOrganization = async (body: CreateUserOrganization) => {
-  console.log('addUserToOrganization', body);
   return db.insert(usersOrganizationsTable).values(body);
 };
 

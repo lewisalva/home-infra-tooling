@@ -24,7 +24,7 @@ export const signupPost = new Elysia().post(
         return error(409);
       }
 
-      console.log(err);
+      console.error(err);
       return error(500);
     }
   },
