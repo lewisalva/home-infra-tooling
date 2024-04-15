@@ -33,7 +33,14 @@ export const removeUserFromOrganization = async (body: DeleteUserOrganization) =
 
 export const findUsersInOrganization = (organizationId: UserOrganization['organizationId']) => {
   return db.query.usersOrganizationsTable.findMany({
-    with: { user: true },
+    with: {
+      user: {
+        columns: {
+          name: true,
+          email: true,
+        },
+      },
+    },
     where: eq(usersOrganizationsTable.organizationId, organizationId),
   });
 };
