@@ -1,4 +1,5 @@
-import { createContext, useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { createContext, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { signin, signout, signup } from '../services/auth';
@@ -18,56 +19,48 @@ type Props = {
 export const AuthenticationContext = createContext<AuthenticationContextType | null>(null);
 
 export const AuthenticationContextProvider = ({ children }: Props) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [shouldLoad, setShouldLoad] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const {
+    data: isLoggedIn,
+    status,
+    refetch,
+  } = useQuery({
+    queryKey: ['validateSession'],
+    queryFn: () => getUser(),
+  });
 
   const signIn = async (email: string, password: string) => {
     await signin({ email, password });
 
-    setShouldLoad(true);
+    refetch();
   };
 
   const signUp = async (name: string, email: string, password: string) => {
     await signup({ name, email, password });
 
-    setShouldLoad(true);
+    refetch();
   };
 
   const signOut = async () => {
     await signout();
 
-    setIsLoggedIn(false);
+    refetch();
   };
 
   useEffect(() => {
-    setShouldLoad(true);
-  }, []);
+    if (status === 'pending') return;
 
-  useEffect(() => {
-    if (shouldLoad) {
-      setShouldLoad(false);
-      getUser().then((isUserLoggedIn) => {
-        setIsLoggedIn(isUserLoggedIn);
-      });
-    }
-  }, [shouldLoad]);
-
-  useEffect(() => {
-    if (shouldLoad) {
-      return;
-    }
-
-    if (isLoggedIn && !location.pathname.includes('portal')) {
-      navigate('/portal/organizations');
-    } else if (!isLoggedIn && location.pathname.includes('portal')) {
+    const shouldRedirectFromPortal = !isLoggedIn && location.pathname.startsWith('/portal');
+    if (shouldRedirectFromPortal) {
       navigate('/signin');
+    } else {
+      navigate('/portal/organizations');
     }
-  }, [isLoggedIn, location, navigate, shouldLoad]);
+  }, [isLoggedIn, status, location.pathname, navigate]);
 
   const defaultValue: AuthenticationContextType = {
-    isLoggedIn,
+    isLoggedIn: !!isLoggedIn,
     signIn,
     signUp,
     signOut,

@@ -1,7 +1,8 @@
-import { createContext, useCallback, useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { createContext, useCallback, useState } from 'react';
 
 import {
-  getOrganization,
+  getOrganizations,
   OrganizationCreateType,
   OrganizationsType,
   postOrganization,
@@ -24,42 +25,26 @@ export const OrganizationContext = createContext<OrganizationContextType | null>
 export const OrganizationContextProvider = ({ children }: Props) => {
   const [selectedOrganizationId, setSelectedOrganizationId] = useState('');
   const [selectedOrganizationName, setSelectedOrganizationName] = useState('');
-  const [organizations, setOrganizations] = useState<OrganizationContextType['organizations']>([]);
-  const [shouldLoadOrganizations, setShouldLoadOrganizations] = useState(false);
+  const { data: organizations, refetch } = useQuery({
+    queryKey: ['organizations'],
+    queryFn: () => getOrganizations(),
+    initialData: [],
+  });
 
   const setSelectedOrganization = useCallback((id: string, name: string) => {
     setSelectedOrganizationId(id);
     setSelectedOrganizationName(name);
   }, []);
 
-  useEffect(() => {
-    setShouldLoadOrganizations(true);
-  }, []);
-
-  useEffect(() => {
-    setShouldLoadOrganizations(true);
-  }, []);
-
-  useEffect(() => {
-    if (shouldLoadOrganizations) {
-      setShouldLoadOrganizations(false);
-      getOrganization().then((organizations) => {
-        if (organizations.length > 0) {
-          setSelectedOrganization(organizations[0].id, organizations[0].name);
-        }
-        setOrganizations(organizations);
-      });
-    }
-  }, [shouldLoadOrganizations, setSelectedOrganization]);
-
   const createOrganization = useCallback(
     async ({ name }: OrganizationCreateType) => {
       const orgId = await postOrganization({ name });
       if (!orgId) throw new Error('Failed to create organization');
+      refetch();
 
       setSelectedOrganization(orgId, name);
     },
-    [setSelectedOrganization]
+    [setSelectedOrganization, refetch]
   );
 
   const defaultValue: OrganizationContextType = {
