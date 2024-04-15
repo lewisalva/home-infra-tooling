@@ -18,7 +18,14 @@
     "@typescript-eslint/no-non-null-assertion": 2,
     "@typescript-eslint/no-redeclare": 2,
     "@typescript-eslint/no-this-alias": 2,
-    "@typescript-eslint/no-unused-vars": 1,
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "caughtErrorsIgnorePattern": "^_"
+      }
+    ],
     "@typescript-eslint/no-use-before-define": "warn",
     "@typescript-eslint/no-var-requires": 2,
     "no-unused-expressions": "off",
