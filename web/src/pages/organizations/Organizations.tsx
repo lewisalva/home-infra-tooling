@@ -7,22 +7,20 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
 import { LinkUnstyled } from '../../components/LinkUnstyled';
-import { type OrganizationContextType } from '../../contexts/OrganizationContext';
 import { useOrganizationContext } from '../../contexts/useOrganizationContext';
+import { OrganizationType } from '../../services/organizations';
 
 type OrganizationCardProps = {
   isSelected?: boolean;
   loading?: boolean;
-  organizationName: string;
-  organizationId: string;
-  setSelectedOrganization: OrganizationContextType['setSelectedOrganization'];
+  organization: OrganizationType;
+  setSelectedOrganization: () => void;
 };
 
 const OrganizationCard = ({
   isSelected = false,
   loading,
-  organizationId,
-  organizationName,
+  organization,
   setSelectedOrganization,
 }: OrganizationCardProps) => {
   return (
@@ -36,7 +34,7 @@ const OrganizationCard = ({
           backgroundColor: 'action.hover',
         },
       }}
-      onClick={() => setSelectedOrganization(organizationId, organizationName)}
+      onClick={() => setSelectedOrganization()}
     >
       <CardContent>
         {loading ? (
@@ -46,7 +44,7 @@ const OrganizationCard = ({
           </>
         ) : (
           <Typography variant="body2" color="text.secondary" component="p">
-            {organizationName}
+            {organization.name}
           </Typography>
         )}
       </CardContent>
@@ -55,8 +53,7 @@ const OrganizationCard = ({
 };
 
 export const Organizations = () => {
-  const { organizations, selectedOrganizationId, setSelectedOrganization } =
-    useOrganizationContext();
+  const { organizations, selectedOrganization, setSelectedOrganization } = useOrganizationContext();
 
   return (
     <Stack>
@@ -77,10 +74,9 @@ export const Organizations = () => {
         {organizations.map((organization) => (
           <Grid item xs={3} key={organization.id}>
             <OrganizationCard
-              organizationName={organization.name}
-              organizationId={organization.id}
-              setSelectedOrganization={setSelectedOrganization}
-              isSelected={selectedOrganizationId === organization.id}
+              organization={organization}
+              setSelectedOrganization={() => setSelectedOrganization(organization)}
+              isSelected={selectedOrganization?.id === organization.id}
             />
           </Grid>
         ))}

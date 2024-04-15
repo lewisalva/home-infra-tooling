@@ -33,7 +33,7 @@ const AppBar = styled(MuiAppBar, {
 }));
 
 export const Header = ({ open, toggleDrawer }: { open: boolean; toggleDrawer: () => void }) => {
-  const { selectedOrganizationName } = useOrganizationContext();
+  const { selectedOrganization } = useOrganizationContext();
 
   return (
     <AppBar position="absolute" open={open}>
@@ -55,7 +55,7 @@ export const Header = ({ open, toggleDrawer }: { open: boolean; toggleDrawer: ()
           <MenuIcon />
         </IconButton>
         <Typography component="h1" variant="h6" color="inherit" noWrap sx={{ flexGrow: 1 }}>
-          {selectedOrganizationName}
+          {selectedOrganization?.name}
         </Typography>
         <IconButton color="inherit">
           <Badge badgeContent={4} color="secondary">

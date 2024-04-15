@@ -35,32 +35,44 @@ export const OrganizationMembersContextProvider = ({ children }: Props) => {
   const [selectedOrganizationMemberId, setSelectedOrganizationMemberId] = useState<
     string | undefined
   >(undefined);
-  const { selectedOrganizationId } = useOrganizationContext();
+  const { selectedOrganization } = useOrganizationContext();
   const {
     data: organizationMembers,
-    // refetch: reloadOrganizationMembers,
+    refetch: reloadOrganizationMembers,
     isLoading: isLoadingOrganizationMembers,
   } = useQuery({
-    queryKey: ['organizationMembers', selectedOrganizationId],
+    queryKey: ['organizationMembers', selectedOrganization?.id],
     queryFn: () => {
-      return getOrganizationMembers(selectedOrganizationId);
+      if (selectedOrganization) {
+        return getOrganizationMembers(selectedOrganization?.id);
+      }
+      return [];
     },
   });
 
-  const addOrganizationMember = useCallback(async (body: OrganizationMemberCreateType) => {
-    const isSuccess = await postOrganizationMember(body);
-    if (!isSuccess) throw new Error('Failed to add organization member');
-  }, []);
+  const addOrganizationMember = useCallback(
+    async (body: OrganizationMemberCreateType) => {
+      await postOrganizationMember(body);
+      reloadOrganizationMembers();
+    },
+    [reloadOrganizationMembers]
+  );
 
-  const updateOrganizationMember = useCallback(async (body: OrganizationMemberUpdateType) => {
-    const isSuccess = await putOrganizationMember(body);
-    if (!isSuccess) throw new Error('Failed to update organization member');
-  }, []);
+  const updateOrganizationMember = useCallback(
+    async (body: OrganizationMemberUpdateType) => {
+      await putOrganizationMember(body);
+      reloadOrganizationMembers();
+    },
+    [reloadOrganizationMembers]
+  );
 
-  const removeOrganizationMember = useCallback(async (body: OrganizationMemberDeleteType) => {
-    const isSuccess = await deleteOrganizationMember(body);
-    if (!isSuccess) throw new Error('Failed to remove organization member');
-  }, []);
+  const removeOrganizationMember = useCallback(
+    async (body: OrganizationMemberDeleteType) => {
+      await deleteOrganizationMember(body);
+      reloadOrganizationMembers();
+    },
+    [reloadOrganizationMembers]
+  );
 
   const defaultValue: OrganizationMembersContextType = {
     selectedOrganizationMemberId,
