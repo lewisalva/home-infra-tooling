@@ -27,7 +27,7 @@ export const getOrganizationMembers = async (
     .members.get();
 
   if (status !== 200 || !data) {
-    return [];
+    throw new Error('Failed to fetch organization members');
   }
 
   window.setTimeout(() => updateQueryClientWithMembers(data), 0);
@@ -41,7 +41,7 @@ export const postOrganizationMember = async (body: OrganizationMemberCreateType)
     .members.post(body);
 
   if (status !== 201) {
-    return false;
+    throw new Error('Failed to create organization member');
   }
 
   return true;
@@ -54,7 +54,7 @@ export const putOrganizationMember = async (body: OrganizationMemberUpdateType) 
     .put(body);
 
   if (status !== 204) {
-    return false;
+    throw new Error('Failed to update organization member');
   }
 
   return true;
@@ -70,7 +70,7 @@ export const deleteOrganizationMember = async ({
     .delete();
 
   if (status !== 204) {
-    return false;
+    throw new Error('Failed to delete organization member');
   }
 
   return true;
