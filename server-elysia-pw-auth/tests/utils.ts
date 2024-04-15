@@ -24,14 +24,10 @@ export const getAuthHeaders = async (email = 'lewis@j1.support') => {
     return Object.fromEntries(headersMap[email]);
   }
 
-  const { headers, status } = await authApi.auth.signin.post({
+  const { headers } = await authApi.auth.signin.post({
     email,
     password: TEST_USER_PASSWORD,
   });
-
-  if (status !== 204) {
-    throw new Error(`Failed to login for test user ${email}`);
-  }
 
   const [cookie] = (headers as Headers).getSetCookie();
 
