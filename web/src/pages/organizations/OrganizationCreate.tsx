@@ -1,11 +1,13 @@
 import { Box, Button, TextField, Typography } from '@mui/material';
 import { FormEvent, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { useOrganizationContext } from '../../contexts/useOrganizationContext';
 
 export const OrganizationCreate = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { createOrganization } = useOrganizationContext();
+  const navigate = useNavigate();
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     setIsSubmitting(true);
@@ -16,6 +18,7 @@ export const OrganizationCreate = () => {
     };
     try {
       await createOrganization(body);
+      navigate('/portal/organizations');
     } catch (error) {
       console.error(error);
     } finally {
