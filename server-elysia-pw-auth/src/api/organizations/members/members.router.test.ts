@@ -1,5 +1,5 @@
 import { treaty } from '@elysiajs/eden';
-import { afterEach, beforeAll, describe, expect, jest, spyOn, test } from 'bun:test';
+import { beforeAll, describe, expect, spyOn, test } from 'bun:test';
 
 import {
   generateUsersAndOrgsForTest,
@@ -18,10 +18,6 @@ describe('members.router', () => {
 
   beforeAll(async () => {
     generatedData = await generateUsersAndOrgsForTest('members.router');
-  });
-
-  afterEach(() => {
-    jest.restoreAllMocks();
   });
 
   test('e2e management of organization members as admin', async () => {
@@ -171,7 +167,7 @@ describe('members.router', () => {
           generatedData.users[user as keyof GenerateUsersAndOrgsType['users']].email
         );
 
-        spyOn(OrganizationMemberModel, 'addUserToOrganization').mockReturnValueOnce(
+        const spy = spyOn(OrganizationMemberModel, 'addUserToOrganization').mockReturnValueOnce(
           // @ts-expect-error override for mock
           Promise.resolve()
         );
@@ -192,6 +188,8 @@ describe('members.router', () => {
         } else {
           expect(status).toEqual(401);
         }
+
+        spy.mockRestore();
       });
 
       test(`it removes a member from an organization, if autorized, as ${user}`, async () => {
@@ -199,7 +197,10 @@ describe('members.router', () => {
           generatedData.users[user as keyof GenerateUsersAndOrgsType['users']].email
         );
 
-        spyOn(OrganizationMemberModel, 'removeUserFromOrganization').mockReturnValueOnce(
+        const spy = spyOn(
+          OrganizationMemberModel,
+          'removeUserFromOrganization'
+        ).mockReturnValueOnce(
           // @ts-expect-error override for mock
           Promise.resolve()
         );
@@ -214,6 +215,8 @@ describe('members.router', () => {
         } else {
           expect(status).toEqual(401);
         }
+
+        spy.mockRestore();
       });
 
       test(`it updates a member in an organization, if authorized, as ${user}`, async () => {
@@ -221,7 +224,7 @@ describe('members.router', () => {
           generatedData.users[user as keyof GenerateUsersAndOrgsType['users']].email
         );
 
-        spyOn(OrganizationMemberModel, 'updateUserInOrganization').mockReturnValueOnce(
+        const spy = spyOn(OrganizationMemberModel, 'updateUserInOrganization').mockReturnValueOnce(
           // @ts-expect-error override for mock
           Promise.resolve()
         );
@@ -243,6 +246,8 @@ describe('members.router', () => {
         } else {
           expect(status).toEqual(401);
         }
+
+        spy.mockRestore();
       });
     });
   });

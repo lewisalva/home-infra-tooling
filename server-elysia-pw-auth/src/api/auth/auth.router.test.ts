@@ -1,5 +1,5 @@
 import { treaty } from '@elysiajs/eden';
-import { afterEach, describe, expect, jest, mock, spyOn, test } from 'bun:test';
+import { describe, expect, spyOn, test } from 'bun:test';
 
 import * as UserModel from '../../models/User';
 import { authRouter } from './auth.router';
@@ -7,10 +7,6 @@ import { authRouter } from './auth.router';
 const authApi = treaty(authRouter);
 
 describe('auth.router', () => {
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-
   test('it should be defined', () => {
     expect(authRouter).toBeDefined();
   });
@@ -147,7 +143,7 @@ describe('auth.router', () => {
     });
 
     test('throws 500', async () => {
-      spyOn(UserModel, 'createUser').mockImplementationOnce(() => Promise.reject());
+      const spy = spyOn(UserModel, 'createUser').mockRejectedValueOnce('Mock Error');
 
       const { status, error } = await authApi.auth.signup.post({
         email: 'lewis@j1.support',
@@ -157,6 +153,8 @@ describe('auth.router', () => {
 
       expect(status).toEqual(500);
       expect(error?.value).toEqual('Internal Server Error');
+
+      spy.mockRestore();
     });
   });
 });
