@@ -1,3 +1,4 @@
+import { Group } from '@mui/icons-material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import Home from '@mui/icons-material/Home';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -12,7 +13,6 @@ import { styled } from '@mui/material/styles';
 import Toolbar from '@mui/material/Toolbar';
 import { useLocation } from 'react-router-dom';
 
-// import { useOrganizationContext } from '../contexts/useOrganizationContext';
 import { LinkUnstyled } from './LinkUnstyled';
 
 export const drawerWidth = 240;
@@ -44,7 +44,6 @@ const Drawer = styled(MuiDrawer, {
 }));
 
 export const SideNav = ({ open, toggleDrawer }: { open: boolean; toggleDrawer: () => void }) => {
-  // const { selectedOrganizationId } = useOrganizationContext();
   const { pathname } = useLocation();
 
   return (
@@ -64,11 +63,19 @@ export const SideNav = ({ open, toggleDrawer }: { open: boolean; toggleDrawer: (
       <Divider />
       <List component="nav">
         <LinkUnstyled to="/portal/organizations">
-          <ListItemButton selected={pathname.includes('/')}>
+          <ListItemButton selected={pathname.endsWith('/portal/organizations')}>
             <ListItemIcon>
               <Home />
             </ListItemIcon>
             <ListItemText primary="Home" />
+          </ListItemButton>
+        </LinkUnstyled>
+        <LinkUnstyled to="/portal/organizations/members">
+          <ListItemButton selected={pathname.endsWith('/portal/organizations/members')}>
+            <ListItemIcon>
+              <Group />
+            </ListItemIcon>
+            <ListItemText primary="Members" />
           </ListItemButton>
         </LinkUnstyled>
         <Divider sx={{ my: 1 }} />
