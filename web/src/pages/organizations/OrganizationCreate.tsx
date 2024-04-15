@@ -14,7 +14,6 @@ export const OrganizationCreate = () => {
     const body = {
       name: data.get('name') + '',
     };
-    console.log(body);
     try {
       await createOrganization(body);
     } catch (error) {

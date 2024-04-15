@@ -19,7 +19,6 @@ export default function Signin() {
       email: data.get('email') + '',
       password: data.get('password') + '',
     };
-    console.log(body);
     try {
       signIn(body.email, body.password);
     } catch (error) {

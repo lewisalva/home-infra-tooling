@@ -36,10 +36,9 @@ const columns: GridColDef[] = [
 
 export const MembersTable = () => {
   const { organizationMembers, setSelectedOrganizationMemberId } = useOrganizationMembersContext();
-  console.log({ organizationMembers });
 
-  const handleEvent: GridEventListener<'rowClick'> = (params) => {
-    console.log({ params });
+  const handleEvent: GridEventListener<'rowClick'> = ({ row }) => {
+    console.debug({ row });
   };
 
   return (
@@ -50,12 +49,12 @@ export const MembersTable = () => {
         alignItems="flex-start"
         sx={{ mb: 2 }}
       >
-        <Typography variant="h4">Patients</Typography>
-        <LinkUnstyled to={'/portal/patients/create'}>
-          <Button variant={'contained'}>
-            <Add /> Add Patient
-          </Button>
-        </LinkUnstyled>
+        <Typography variant="h4">Members</Typography>
+        {/* <LinkUnstyled to={'/portal/organizations/members/create'}> */}
+        <Button variant={'contained'}>
+          <Add /> Add Member
+        </Button>
+        {/* </LinkUnstyled> */}
       </Stack>
       {organizationMembers && (
         <DataGrid
