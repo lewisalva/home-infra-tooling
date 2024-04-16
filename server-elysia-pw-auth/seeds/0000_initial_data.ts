@@ -27,7 +27,7 @@ export const initial_data = async () => {
   const [user] = await db.select().from(usersTable).where(eq(usersTable.email, initialUser.email));
 
   if (user) {
-    throw new Error('Initial user already exists');
+    return new Error('Initial user already exists');
   }
 
   const [{ userId }] = await db
