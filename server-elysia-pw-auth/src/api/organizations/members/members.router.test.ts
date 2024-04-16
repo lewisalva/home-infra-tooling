@@ -149,6 +149,30 @@ describe('members.router', () => {
       expect(error?.value).toEqual('Bad Request');
     });
 
+    test('it allows adding a member to an organization by email', async () => {
+      const headers = await getAuthHeaders();
+
+      const spy = spyOn(OrganizationMemberModel, 'addUserToOrganization').mockReturnValueOnce(
+        // @ts-expect-error override for mock
+        Promise.resolve()
+      );
+
+      const { status } = await organizationsApi
+        .organizations({ organizationId: generatedData.orgs.organization.id })
+        .members.post(
+          {
+            email: generatedData.users.member.email,
+            permission: 'member',
+            organizationId: generatedData.orgs.organization.id,
+          },
+          { headers }
+        );
+
+      expect(status).toEqual(201);
+
+      spy.mockRestore();
+    });
+
     const expected: Record<keyof GenerateUsersAndOrgsType['users'], { isSuccess: boolean }> = {
       admin: { isSuccess: true },
       member: { isSuccess: false },

@@ -7,8 +7,14 @@ import { usersOrganizationsTable } from '../schema';
 
 export const selectUserOrganizationSchema = createSelectSchema(usersOrganizationsTable);
 export const createUserOrganizationSchema = t.Composite([
-  t.Pick(selectUserOrganizationSchema, ['userId', 'organizationId']),
+  t.Pick(selectUserOrganizationSchema, ['organizationId', 'userId']),
   t.Partial(t.Pick(selectUserOrganizationSchema, ['permission'])),
+]);
+export const createUserOrganizationWithEmailSchema = t.Composite([
+  t.Pick(selectUserOrganizationSchema, ['organizationId']),
+  t.Partial(t.Pick(selectUserOrganizationSchema, ['userId'])),
+  t.Partial(t.Pick(selectUserOrganizationSchema, ['permission'])),
+  t.Partial(t.Object({ email: t.String() })),
 ]);
 
 export type UserOrganization = Static<typeof selectUserOrganizationSchema>;

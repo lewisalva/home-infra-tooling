@@ -5,10 +5,12 @@ import { isUserAdminForOrganization } from '../../../globalMiddleware/authorizat
 import {
   addUserToOrganization,
   createUserOrganizationSchema,
+  createUserOrganizationWithEmailSchema,
   findUsersInOrganization,
   removeUserFromOrganization,
   updateUserInOrganization,
 } from '../../../models/OrganizationMember';
+import { findUserIdByEmail } from '../../../models/User';
 
 export const membersRouter = new Elysia().use(ensureAuthentication).group(
   '/:organizationId/members',
@@ -32,11 +34,24 @@ export const membersRouter = new Elysia().use(ensureAuthentication).group(
             return error(400);
           }
 
-          await addUserToOrganization({ ...body, organizationId: params.organizationId });
+          let userId = body.userId;
+          if (body.email) {
+            userId = await findUserIdByEmail(body.email);
+          }
+
+          if (!userId) {
+            return error(404);
+          }
+
+          await addUserToOrganization({
+            userId,
+            organizationId: params.organizationId,
+            permission: body.permission,
+          });
 
           set.status = 201;
         },
-        { body: createUserOrganizationSchema }
+        { body: createUserOrganizationWithEmailSchema }
       )
       .delete('/:userId', async ({ params, set }) => {
         await removeUserFromOrganization({
