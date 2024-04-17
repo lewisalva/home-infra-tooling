@@ -1,4 +1,3 @@
-import CircularProgress from '@mui/material/CircularProgress';
 import { useEffect, useState } from 'react';
 
 import { useAuthenticationContext } from '../../contexts/useAuthenticationContext';
@@ -18,5 +17,5 @@ export const Signout = () => {
     }
   }, [shouldSignOut, signOut]);
 
-  return <CircularProgress />;
+  return 'Signing out...';
 };

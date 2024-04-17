@@ -1,10 +1,8 @@
-import Container from '@mui/material/Container';
 import { Outlet, useNavigate } from 'react-router-dom';
 
 import { useAuthenticationContext } from '../../contexts/useAuthenticationContext';
-import { Copyright } from '../Copyright';
 
-export const Unauthenticated = () => {
+export const AuthTemplate = () => {
   const { isLoggedIn } = useAuthenticationContext();
   const navigate = useNavigate();
 
@@ -16,9 +14,8 @@ export const Unauthenticated = () => {
   }
 
   return (
-    <Container component="main" maxWidth="xs">
+    <div className="container mx-auto sm:px-6 lg:px-8">
       <Outlet />
-      <Copyright sx={{ mt: 8, mb: 4 }} />
-    </Container>
+    </div>
   );
 };

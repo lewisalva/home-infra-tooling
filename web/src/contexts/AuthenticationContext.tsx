@@ -2,10 +2,11 @@ import { useQuery } from '@tanstack/react-query';
 import { createContext } from 'react';
 
 import { signin, signout, signup } from '../services/auth';
-import { getUser } from '../services/users';
+import { getUser, User } from '../services/users';
 
 export type AuthenticationContextType = {
-  isLoggedIn?: boolean;
+  isLoggedIn: boolean;
+  user?: User;
   signIn: (email: string, password: string) => void;
   signUp: (name: string, email: string, password: string) => void;
   signOut: () => void;
@@ -18,7 +19,7 @@ type Props = {
 export const AuthenticationContext = createContext<AuthenticationContextType | null>(null);
 
 export const AuthenticationContextProvider = ({ children }: Props) => {
-  const { data: isLoggedIn, refetch } = useQuery({
+  const { data: user, refetch } = useQuery({
     queryKey: ['validateSession'],
     queryFn: () => getUser(),
   });
@@ -42,7 +43,8 @@ export const AuthenticationContextProvider = ({ children }: Props) => {
   };
 
   const defaultValue: AuthenticationContextType = {
-    isLoggedIn,
+    user,
+    isLoggedIn: !!user,
     signIn,
     signUp,
     signOut,

@@ -32,6 +32,8 @@ export const getOrganizationMembers = async (
 
   window.setTimeout(() => updateQueryClientWithMembers(data), 0);
 
+  console.log(data);
+
   return data;
 };
 

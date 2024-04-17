@@ -1,4 +1,3 @@
-import { Box, Button, TextField, Typography } from '@mui/material';
 import { FormEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -26,24 +25,26 @@ export const OrganizationCreate = () => {
     }
   };
 
-  return (
-    <Box>
-      <Typography variant="h4">Create Organization</Typography>
-      <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: 400 }}>
-        <TextField
-          margin="normal"
-          required
-          id="name"
-          label="Name"
-          name="name"
-          fullWidth
-          autoComplete="off"
-          autoFocus
-        />
-        <Button type="submit" variant="contained" sx={{ mt: 3, mb: 2 }} disabled={isSubmitting}>
-          Sign In
-        </Button>
-      </Box>
-    </Box>
-  );
+  return 'Create Organization';
+
+  // return (
+  //   <Box>
+  //     <Typography variant="h4">Create Organization</Typography>
+  //     <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: 400 }}>
+  //       <TextField
+  //         margin="normal"
+  //         required
+  //         id="name"
+  //         label="Name"
+  //         name="name"
+  //         fullWidth
+  //         autoComplete="off"
+  //         autoFocus
+  //       />
+  //       <Button type="submit" variant="contained" sx={{ mt: 3, mb: 2 }} disabled={isSubmitting}>
+  //         Sign In
+  //       </Button>
+  //     </Box>
+  //   </Box>
+  // );
 };

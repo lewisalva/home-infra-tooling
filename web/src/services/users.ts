@@ -1,6 +1,7 @@
 import { authenticatedClient, Schema } from './client';
 
 export type UserUpdateType = Schema['api']['users']['me']['put']['body'];
+export type User = Schema['api']['users']['me']['get']['response'][200];
 
 export const getUser = async (shouldThrow = false) => {
   const { data, status } = await authenticatedClient.api.users.me.get();
@@ -9,10 +10,10 @@ export const getUser = async (shouldThrow = false) => {
     if (shouldThrow) {
       throw new Error('Failed to fetch user');
     }
-    return false;
+    return undefined;
   }
 
-  return true;
+  return data;
 };
 
 export const putUser = async (body: UserUpdateType) => {
