@@ -24,6 +24,7 @@ export type User = Static<typeof selectUserSchema>;
 export type LoginUser = Static<typeof loginUserSchema>;
 export type SignUpUser = Static<typeof signUpUserSchema>;
 export type UpdateUser = Static<typeof updateUserSchema>;
+export type SimpleUser = Pick<User, 'id' | 'email' | 'name' | 'isPlatformAdmin'>;
 
 export const findUserIdByEmail = async (email: User['email']) => {
   const response = await db.query.usersTable.findFirst({
@@ -37,6 +38,13 @@ export const findUserIdByEmail = async (email: User['email']) => {
 export const findUserByEmail = (email: User['email']) => {
   return db.query.usersTable.findFirst({
     where: eq(usersTable.email, email.toLowerCase()),
+  });
+};
+
+export const findUser = (userId: User['id']) => {
+  return db.query.usersTable.findFirst({
+    where: eq(usersTable.id, userId),
+    columns: { id: true, email: true, name: true, isPlatformAdmin: true },
   });
 };
 

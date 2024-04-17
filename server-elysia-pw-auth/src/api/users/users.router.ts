@@ -1,12 +1,17 @@
-import { Elysia } from 'elysia';
+import { Elysia, error } from 'elysia';
 
 import { ensureAuthentication } from '../../globalMiddleware/authentication';
-import { updateUser, updateUserSchema } from '../../models/User';
+import { findUser, updateUser, updateUserSchema } from '../../models/User';
 
 export const usersRouter = new Elysia({ prefix: '/users' })
   .use(ensureAuthentication)
-  .get('/me', ({ user }) => {
-    return { id: user.id, email: user.email };
+  .get('/me', async ({ user }) => {
+    const simpleUser = await findUser(user.id);
+    if (!simpleUser) {
+      return error(401);
+    }
+
+    return simpleUser;
   })
   .put(
     '/me',
