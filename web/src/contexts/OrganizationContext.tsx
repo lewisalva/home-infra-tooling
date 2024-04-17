@@ -13,7 +13,7 @@ export type OrganizationContextType = {
   selectedOrganization?: OrganizationType;
   setSelectedOrganization: (org: OrganizationType) => void;
   organizations: OrganizationsType;
-  createOrganization: (body: OrganizationCreateType) => void;
+  createOrganization: (body: OrganizationCreateType) => Promise<void>;
 };
 
 type Props = {

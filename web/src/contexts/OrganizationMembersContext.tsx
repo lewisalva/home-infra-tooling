@@ -7,6 +7,7 @@ import {
   OrganizationMemberCreateType,
   OrganizationMemberDeleteType,
   OrganizationMembersType,
+  OrganizationMemberType,
   OrganizationMemberUpdateType,
   postOrganizationMember,
   putOrganizationMember,
@@ -14,13 +15,13 @@ import {
 import { useOrganizationContext } from './useOrganizationContext';
 
 export type OrganizationMembersContextType = {
-  selectedOrganizationMemberId?: string;
-  setSelectedOrganizationMemberId: (id: string) => void;
+  selectedOrganizationMember?: OrganizationMemberType;
+  setSelectedOrganizationMember: (member?: OrganizationMemberType) => void;
   organizationMembers?: OrganizationMembersType;
   isLoadingOrganizationMembers: boolean;
-  addOrganizationMember: (body: OrganizationMemberCreateType) => void;
-  updateOrganizationMember: (body: OrganizationMemberUpdateType) => void;
-  removeOrganizationMember: (body: OrganizationMemberDeleteType) => void;
+  addOrganizationMember: (body: OrganizationMemberCreateType) => Promise<void>;
+  updateOrganizationMember: (body: OrganizationMemberUpdateType) => Promise<void>;
+  removeOrganizationMember: (body: OrganizationMemberDeleteType) => Promise<void>;
 };
 
 type Props = {
@@ -32,8 +33,8 @@ export const OrganizationMembersContext = createContext<OrganizationMembersConte
 );
 
 export const OrganizationMembersContextProvider = ({ children }: Props) => {
-  const [selectedOrganizationMemberId, setSelectedOrganizationMemberId] = useState<
-    string | undefined
+  const [selectedOrganizationMember, setSelectedOrganizationMember] = useState<
+    OrganizationMemberType | undefined
   >(undefined);
   const { selectedOrganization } = useOrganizationContext();
   const {
@@ -75,8 +76,8 @@ export const OrganizationMembersContextProvider = ({ children }: Props) => {
   );
 
   const defaultValue: OrganizationMembersContextType = {
-    selectedOrganizationMemberId,
-    setSelectedOrganizationMemberId,
+    selectedOrganizationMember,
+    setSelectedOrganizationMember,
     organizationMembers,
     isLoadingOrganizationMembers,
     addOrganizationMember,

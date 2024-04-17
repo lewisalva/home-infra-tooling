@@ -1,11 +1,17 @@
 import { clsx } from 'clsx';
+import { useState } from 'react';
 
 import { ContentHeader } from '../../../../components/ContentHeader';
+import { SidePanel } from '../../../../components/SidePanel';
 import { useOrganizationMembersContext } from '../../../../contexts/useOrganizationMembersContext';
 import { dayjs } from '../../../../utilities/dayjs';
+import { MemberAdd } from './MemberAdd';
+import { MemberEdit } from './MemberEdit';
 
 export const MembersTable = () => {
-  const { organizationMembers, setSelectedOrganizationMemberId } = useOrganizationMembersContext();
+  const { organizationMembers, selectedOrganizationMember, setSelectedOrganizationMember } =
+    useOrganizationMembersContext();
+  const [isAddMemberPanelOpen, setIsAddMemberPanelOpen] = useState(false);
 
   return (
     <>
@@ -13,13 +19,14 @@ export const MembersTable = () => {
         <button
           type="button"
           className="order-0 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:order-1 sm:ml-3"
+          onClick={() => setIsAddMemberPanelOpen(true)}
         >
           Add
         </button>
       </ContentHeader>
 
-      <div className="mt-8 sm:block">
-        <div className="inline-block min-w-full border-b border-gray-200 align-middle">
+      <div className="mt-8 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="inline-block min-w-full border-b border-l border-r border-gray-200 align-middle">
           <table className="min-w-full">
             <thead>
               <tr className="border-t border-gray-200">
@@ -30,13 +37,13 @@ export const MembersTable = () => {
                   <span className="lg:pl-2">Name</span>
                 </th>
                 <th
-                  className="hidden border-b border-gray-200 bg-gray-50 px-6 py-3 text-right text-sm font-semibold text-gray-900 md:table-cell"
+                  className="hidden border-b whitespace-nowrap border-gray-200 bg-gray-50 px-6 py-3 text-right text-sm font-semibold text-gray-900 md:table-cell"
                   scope="col"
                 >
                   Role
                 </th>
                 <th
-                  className="hidden border-b border-gray-200 bg-gray-50 px-6 py-3 text-right text-sm font-semibold text-gray-900 md:table-cell"
+                  className="hidden border-b whitespace-nowrap border-gray-200 bg-gray-50 px-6 py-3 text-right text-sm font-semibold text-gray-900 md:table-cell"
                   scope="col"
                 >
                   Last updated
@@ -71,9 +78,12 @@ export const MembersTable = () => {
                     {dayjs(member.updatedAt).fromNow()}
                   </td>
                   <td className="whitespace-nowrap px-6 py-3 text-right text-sm font-medium">
-                    <a href="#" className="text-indigo-600 hover:text-indigo-900">
+                    <div
+                      className="text-indigo-600 hover:text-indigo-900 cursor-pointer"
+                      onClick={() => setSelectedOrganizationMember(member)}
+                    >
                       Edit
-                    </a>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -81,6 +91,18 @@ export const MembersTable = () => {
           </table>
         </div>
       </div>
+      <SidePanel isOpen={isAddMemberPanelOpen} closePanel={() => setIsAddMemberPanelOpen(false)}>
+        <MemberAdd closePanel={() => setIsAddMemberPanelOpen(false)} />
+      </SidePanel>
+      <SidePanel
+        isOpen={!!selectedOrganizationMember}
+        closePanel={() => setSelectedOrganizationMember(undefined)}
+      >
+        <MemberEdit
+          closePanel={() => setSelectedOrganizationMember(undefined)}
+          member={selectedOrganizationMember}
+        />
+      </SidePanel>
     </>
   );
 };

@@ -1,11 +1,13 @@
 // import { LinkUnstyled } from '../../components/LinkUnstyled';
 import { clsx } from 'clsx';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 import { ContentHeader } from '../../../components/ContentHeader';
+import { SidePanel } from '../../../components/SidePanel';
 import { useOrganizationContext } from '../../../contexts/useOrganizationContext';
 import { OrganizationType } from '../../../services/organizations';
 import { randomColor } from '../../../utilities/randomColor';
+import { OrganizationCreate } from './OrganizationCreate';
 
 type OrganizationCardProps = {
   isSelected?: boolean;
@@ -51,6 +53,7 @@ const OrganizationCard = ({
 
 export const Organizations = () => {
   const { organizations, selectedOrganization, setSelectedOrganization } = useOrganizationContext();
+  const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
 
   return (
     <>
@@ -58,6 +61,7 @@ export const Organizations = () => {
         <button
           type="button"
           className="order-0 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:order-1 sm:ml-3"
+          onClick={() => setIsSidePanelOpen(true)}
         >
           Create
         </button>
@@ -77,6 +81,9 @@ export const Organizations = () => {
           ))}
         </ul>
       </div>
+      <SidePanel isOpen={isSidePanelOpen} closePanel={() => setIsSidePanelOpen(false)}>
+        <OrganizationCreate closePanel={() => setIsSidePanelOpen(false)} />
+      </SidePanel>
     </>
   );
 };

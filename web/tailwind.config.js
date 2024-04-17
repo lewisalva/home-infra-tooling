@@ -1,4 +1,5 @@
 /** @type {import('tailwindcss').Config} */
+import forms from '@tailwindcss/forms';
 import defaultTheme from 'tailwindcss/defaultTheme';
 
 const tailwindConfig = {
@@ -6,7 +7,7 @@ const tailwindConfig = {
   theme: {
     extend: { fontFamily: { sans: ['Inter var', ...defaultTheme.fontFamily.sans] } },
   },
-  plugins: [import('@tailwindcss/forms')],
+  plugins: [forms],
 };
 
 export default tailwindConfig;
