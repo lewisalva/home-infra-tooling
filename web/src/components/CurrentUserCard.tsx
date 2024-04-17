@@ -2,9 +2,42 @@ import { Menu, Transition } from '@headlessui/react';
 import { ChevronUpDownIcon } from '@heroicons/react/20/solid';
 import { clsx } from 'clsx';
 import { Fragment } from 'react';
+import { Link } from 'react-router-dom';
 
 import { useAuthenticationContext } from '../contexts/useAuthenticationContext';
 import { useOrganizationContext } from '../contexts/useOrganizationContext';
+
+const MenuItems = () => {
+  const itemGroups = [
+    [
+      { name: 'Settings', to: '', isDisabled: true },
+      { name: 'Notifications', to: '', isDisabled: true },
+    ],
+    [{ name: 'Support', to: '', isDisabled: true }],
+    [{ name: 'Logout', to: '/portal/signout', isDisabled: false }],
+  ];
+
+  return itemGroups.map((group, index) => (
+    <div key={`group-${index}`} className="py-1">
+      {group.map((item) => (
+        <Menu.Item key={item.name} disabled={item.isDisabled}>
+          {({ focus }) => (
+            <Link
+              to={item.to}
+              className={clsx(
+                focus ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
+                item.isDisabled ? 'cursor-not-allowed' : 'cursor-pointer',
+                'block px-4 py-2 text-sm'
+              )}
+            >
+              {item.name}
+            </Link>
+          )}
+        </Menu.Item>
+      ))}
+    </div>
+  ));
+};
 
 export const CurrentUserCard = ({ isInStaticNav = true }) => {
   const { user } = useAuthenticationContext();
@@ -15,13 +48,13 @@ export const CurrentUserCard = ({ isInStaticNav = true }) => {
       className={clsx(isInStaticNav ? 'inline-block px-3 text-left' : 'ml-3', 'relative')}
     >
       <div>
-        <Menu.Button className="group w-full rounded-md bg-gray-100 px-3.5 py-2 text-left text-sm font-medium text-gray-700 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-100">
+        <Menu.Button className="group w-full rounded-md bg-gray-100 px-3.5 py-2 text-left text-sm font-medium text-gray-700 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-100">
           <span className="flex w-full items-center justify-between">
             <span className="flex min-w-0 items-center justify-between space-x-3">
               <img
                 className="h-10 w-10 flex-shrink-0 rounded-full bg-gray-300"
                 src="https://images.unsplash.com/photo-1654013313410-c7b0044462dd?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&w=256&h=256&q=80"
-                alt=""
+                alt={user?.name}
               />
               <span className="flex min-w-0 flex-1 flex-col">
                 <span className="truncate text-sm font-medium text-gray-900">{user?.name}</span>
@@ -50,64 +83,7 @@ export const CurrentUserCard = ({ isInStaticNav = true }) => {
             'absolute right-0 z-10 divide-y divide-gray-200 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none'
           )}
         >
-          <div className="py-1">
-            <Menu.Item>
-              {({ active }) => (
-                <a
-                  href="#"
-                  className={clsx(
-                    active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
-                    'block px-4 py-2 text-sm'
-                  )}
-                >
-                  Settings
-                </a>
-              )}
-            </Menu.Item>
-            <Menu.Item>
-              {({ active }) => (
-                <a
-                  href="#"
-                  className={clsx(
-                    active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
-                    'block px-4 py-2 text-sm'
-                  )}
-                >
-                  Notifications
-                </a>
-              )}
-            </Menu.Item>
-          </div>
-          <div className="py-1">
-            <Menu.Item>
-              {({ active }) => (
-                <a
-                  href="#"
-                  className={clsx(
-                    active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
-                    'block px-4 py-2 text-sm'
-                  )}
-                >
-                  Support
-                </a>
-              )}
-            </Menu.Item>
-          </div>
-          <div className="py-1">
-            <Menu.Item>
-              {({ active }) => (
-                <a
-                  href="#"
-                  className={clsx(
-                    active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
-                    'block px-4 py-2 text-sm'
-                  )}
-                >
-                  Logout
-                </a>
-              )}
-            </Menu.Item>
-          </div>
+          <MenuItems />
         </Menu.Items>
       </Transition>
     </Menu>

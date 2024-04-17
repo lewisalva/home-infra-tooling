@@ -1,9 +1,11 @@
 // import { LinkUnstyled } from '../../components/LinkUnstyled';
 import { clsx } from 'clsx';
+import { useMemo } from 'react';
 
 import { ContentHeader } from '../../../components/ContentHeader';
 import { useOrganizationContext } from '../../../contexts/useOrganizationContext';
 import { OrganizationType } from '../../../services/organizations';
+import { randomColor } from '../../../utilities/randomColor';
 
 type OrganizationCardProps = {
   isSelected?: boolean;
@@ -18,6 +20,8 @@ const OrganizationCard = ({
   organization,
   setSelectedOrganization,
 }: OrganizationCardProps) => {
+  const cardColor = useMemo(() => randomColor(), []);
+
   return (
     <li
       key={organization.id}
@@ -29,7 +33,7 @@ const OrganizationCard = ({
     >
       <div
         className={clsx(
-          'bg-pink-600',
+          cardColor,
           'flex w-16 flex-shrink-0 items-center justify-center rounded-l-md text-sm font-medium text-white'
         )}
       >
@@ -53,7 +57,7 @@ export const Organizations = () => {
       <ContentHeader title="Organizations">
         <button
           type="button"
-          className="order-0 inline-flex items-center rounded-md bg-purple-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-purple-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-600 sm:order-1 sm:ml-3"
+          className="order-0 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:order-1 sm:ml-3"
         >
           Create
         </button>

@@ -2,7 +2,7 @@ import { Dialog, Transition } from '@headlessui/react';
 import { Bars3CenterLeftIcon, Bars4Icon, HomeIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { clsx } from 'clsx';
 import { Fragment, ReactNode, useMemo } from 'react';
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 import { CurrentUserCard } from './CurrentUserCard';
 import { Logo } from './Logo';
@@ -32,9 +32,9 @@ const NavItems = ({ isInStaticNav = true }) => {
   return (
     <>
       {navigation.map((item) => (
-        <a
+        <Link
           key={item.name}
-          href={item.href}
+          to={item.href}
           className={clsx(
             item.current
               ? `bg-gray-${isInStaticNav ? '200' : '100'} text-gray-900`
@@ -52,7 +52,7 @@ const NavItems = ({ isInStaticNav = true }) => {
             aria-hidden="true"
           />
           {item.name}
-        </a>
+        </Link>
       ))}
     </>
   );
@@ -115,7 +115,9 @@ export const SiteNav = ({
                     </button>
                   </div>
                 </Transition.Child>
-                <Logo isInStaticNav={false} />
+                <div className="px-4 flex flex-shrink-0 items-center">
+                  <Logo />
+                </div>
                 <div className="mt-5 h-0 flex-1 overflow-y-auto">
                   <nav className="px-2">
                     <div className="space-y-1">
@@ -131,7 +133,9 @@ export const SiteNav = ({
       </Transition.Root>
 
       <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col lg:border-r lg:border-gray-200 lg:bg-gray-100 lg:pb-4 lg:pt-5">
-        <Logo isInStaticNav />
+        <div className="px-6 flex flex-shrink-0 items-center">
+          <Logo />
+        </div>
         <div className="mt-5 flex h-0 flex-1 flex-col overflow-y-auto pt-1">
           <CurrentUserCard isInStaticNav />
           <nav className="mt-6 px-3">
@@ -146,13 +150,16 @@ export const SiteNav = ({
         <div className="sticky top-0 z-10 flex h-16 flex-shrink-0 border-b border-gray-200 bg-white lg:hidden">
           <button
             type="button"
-            className="border-r border-gray-200 px-4 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-purple-500"
+            className="border-r border-gray-200 px-4 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
             onClick={() => setSidebarOpen(true)}
           >
             <span className="sr-only">Open sidebar</span>
             <Bars3CenterLeftIcon className="h-6 w-6" aria-hidden="true" />
           </button>
-          <Logo isInStaticNav={false} />
+
+          <div className="px-4 flex flex-shrink-0 items-center">
+            <Logo />
+          </div>
           <div className="flex flex-1 justify-between px-4 sm:px-6 lg:px-8">
             <div className="flex flex-1"></div>
             <div className="flex items-center">
