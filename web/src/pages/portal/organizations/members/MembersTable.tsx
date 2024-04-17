@@ -1,8 +1,8 @@
 import { clsx } from 'clsx';
 
-import { ContentHeader } from '../../../components/ContentHeader';
-import { useOrganizationMembersContext } from '../../../contexts/useOrganizationMembersContext';
-import { dayjs } from '../../../utilities/dayjs';
+import { ContentHeader } from '../../../../components/ContentHeader';
+import { useOrganizationMembersContext } from '../../../../contexts/useOrganizationMembersContext';
+import { dayjs } from '../../../../utilities/dayjs';
 
 export const MembersTable = () => {
   const { organizationMembers, setSelectedOrganizationMemberId } = useOrganizationMembersContext();

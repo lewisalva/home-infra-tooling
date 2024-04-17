@@ -2,12 +2,12 @@ import { createBrowserRouter } from 'react-router-dom';
 
 import { GlobalProviders } from './GlobalProviders';
 import { AuthTemplate } from './pages/auth/AuthTemplate';
-import Signin from './pages/auth/Signin';
+import { Signin } from './pages/auth/Signin';
 import { Signout } from './pages/auth/Signout';
-import Signup from './pages/auth/Signup';
-import { Members } from './pages/organizations/members/Members';
-import { OrganizationCreate } from './pages/organizations/OrganizationCreate';
-import { Organizations } from './pages/organizations/Organizations';
+import { Signup } from './pages/auth/Signup';
+import { Members } from './pages/portal/organizations/members/Members';
+import { OrganizationCreate } from './pages/portal/organizations/OrganizationCreate';
+import { Organizations } from './pages/portal/organizations/Organizations';
 import { PortalTemplate } from './pages/portal/PortalTemplate';
 
 export const router = createBrowserRouter([
@@ -17,20 +17,20 @@ export const router = createBrowserRouter([
       {
         path: '/',
         element: <AuthTemplate />,
-        // children: [
-        //   {
-        //     index: true,
-        //     element: <Signup />,
-        //   },
-        //   {
-        //     path: 'signin',
-        //     element: <Signin />,
-        //   },
-        //   {
-        //     path: 'signup',
-        //     element: <Signup />,
-        //   },
-        // ],
+        children: [
+          {
+            index: true,
+            element: <Signup />,
+          },
+          {
+            path: 'signin',
+            element: <Signin />,
+          },
+          {
+            path: 'signup',
+            element: <Signup />,
+          },
+        ],
       },
       {
         path: '/portal',

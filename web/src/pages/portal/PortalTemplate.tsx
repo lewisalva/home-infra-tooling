@@ -1,11 +1,19 @@
 import { useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 
 import { SiteNav } from '../../components/SiteNav';
 import { OrganizationContextProvider } from '../../contexts/OrganizationContext';
+import { useAuthenticationContext } from '../../contexts/useAuthenticationContext';
 
 export const PortalTemplate = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { isLoggedIn } = useAuthenticationContext();
+  const navigate = useNavigate();
+
+  if (isLoggedIn !== true) {
+    navigate('/');
+    return null;
+  }
 
   return (
     <OrganizationContextProvider>

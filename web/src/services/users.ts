@@ -10,7 +10,7 @@ export const getUser = async (shouldThrow = false) => {
     if (shouldThrow) {
       throw new Error('Failed to fetch user');
     }
-    return undefined;
+    return null;
   }
 
   return data;

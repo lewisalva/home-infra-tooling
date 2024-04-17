@@ -6,7 +6,7 @@ import { getUser, User } from '../services/users';
 
 export type AuthenticationContextType = {
   isLoggedIn: boolean;
-  user?: User;
+  user?: User | null;
   signIn: (email: string, password: string) => void;
   signUp: (name: string, email: string, password: string) => void;
   signOut: () => void;

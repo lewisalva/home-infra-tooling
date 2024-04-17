@@ -1,9 +1,9 @@
 // import { LinkUnstyled } from '../../components/LinkUnstyled';
 import { clsx } from 'clsx';
 
-import { ContentHeader } from '../../components/ContentHeader';
-import { useOrganizationContext } from '../../contexts/useOrganizationContext';
-import { OrganizationType } from '../../services/organizations';
+import { ContentHeader } from '../../../components/ContentHeader';
+import { useOrganizationContext } from '../../../contexts/useOrganizationContext';
+import { OrganizationType } from '../../../services/organizations';
 
 type OrganizationCardProps = {
   isSelected?: boolean;

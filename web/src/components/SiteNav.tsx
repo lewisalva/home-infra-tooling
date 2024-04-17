@@ -1,11 +1,5 @@
 import { Dialog, Transition } from '@headlessui/react';
-import {
-  Bars3CenterLeftIcon,
-  Bars4Icon,
-  ClockIcon,
-  HomeIcon,
-  XMarkIcon,
-} from '@heroicons/react/24/outline';
+import { Bars3CenterLeftIcon, Bars4Icon, HomeIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { clsx } from 'clsx';
 import { Fragment, ReactNode, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';

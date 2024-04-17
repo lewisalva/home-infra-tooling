@@ -1,7 +1,7 @@
 import { FormEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { useOrganizationContext } from '../../contexts/useOrganizationContext';
+import { useOrganizationContext } from '../../../contexts/useOrganizationContext';
 
 export const OrganizationCreate = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
