@@ -67,10 +67,7 @@ export const Organizations = () => {
         </button>
       </ContentHeader>
       <div className="container mx-auto sm:px-6 lg:px-8">
-        <ul
-          role="list"
-          className="mt-3 grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4"
-        >
+        <ul role="list" className="grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
           {organizations.map((organization) => (
             <OrganizationCard
               key={organization.id}

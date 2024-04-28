@@ -25,7 +25,7 @@ export const MembersTable = () => {
         </button>
       </ContentHeader>
 
-      <div className="mt-8 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="inline-block min-w-full border-b border-l border-r border-gray-200 align-middle">
           <table className="min-w-full">
             <thead>
